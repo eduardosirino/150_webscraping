@@ -138,7 +138,7 @@ def chat_gpt(texto):
         'model': id_modelo, 
         'messages': [{
             'role': 'user', 
-            'content': f'Leia o texto "{texto}" e me responda qual a área construída, área útil, área privativa, área total, área do terreno, sua resposta deve conter apenas area_util="aqui coloca a área construída ou área útil ou área privativa, deve ser dada em metros, e conter apenas um valor, o da área que realmente tem o imóvel", area_total = "Aqui deve conter a área total ou área do terreno, deve conter apenas um valor, o tamanho total do terreno, também em metros", e caso o texto não tenha algum nenhum dado em alguma das variáveis, você deve trocar o valor por None, e sempre responder nessa ordem e nesse formato'
+            'content': f"Leia o texto '{texto}' e me responda qual a área construída, área útil, área privativa, área total, área do terreno, sua resposta deve conter apenas area_util='aqui coloca a área construída ou área útil ou área privativa, deve ser dada em metros, e conter apenas um valor, o da área que realmente tem o imóvel', area_total = 'Aqui deve conter a área total ou área do terreno, deve conter apenas um valor, o tamanho total do terreno, também em metros', e caso o texto não tenha algum nenhum dado em alguma das variáveis, você deve trocar o valor por None, e sempre responder nessa ordem e nesse formato"
         }]
     }
 
@@ -1147,7 +1147,7 @@ def grandesleiloes():
             area_util = None
             area_total = None
         
-        soup = get_requests(f"https://www.grandesleiloes.com.br{soup.find("a", class_="btn btn-primary btn-round btn-block").get("href")}")
+        soup = get_requests(f"https://www.grandesleiloes.com.br{soup.find('a', class_='btn btn-primary btn-round btn-block').get('href')}")
 
         try:
             infos = soup.find_all("div", class_="row")
@@ -1199,7 +1199,7 @@ def lancecertoleiloes():
     data = []
     for card in cards:
         name = card.find("div", class_="lote-detalhes").find("div", class_="lote-descricao").text.lstrip().rstrip().replace("\r\n", " ")
-        link = f"https://www.lancecertoleiloes.com.br{card.find("a").get("href").replace("..", "")}"
+        link = f"https://www.lancecertoleiloes.com.br{card.find('a').get('href').replace('..', '')}"
         img_cover = card.find("img", class_="lote-img").get("src")
         
         soup = get_requests(link)
@@ -1212,7 +1212,7 @@ def lancecertoleiloes():
         
         address = None
         try:
-            address = f"{soup.find("span", id="ContentPlaceHolder1_lblEndereco").text}, de {soup.find("span", id="ContentPlaceHolder1_lblCidade").text}, em {soup.find("span", id="ContentPlaceHolder1_lblEstado").text}"
+            address = f"{soup.find('span', id='ContentPlaceHolder1_lblEndereco').text}, de {soup.find('span', id='ContentPlaceHolder1_lblCidade').text}, em {soup.find('span', id='ContentPlaceHolder1_lblEstado').text}"
         except:  # noqa: E722
             pass
 
@@ -1637,7 +1637,7 @@ def veronicaleiloes():
 
     data = []
     for card in cards:
-        link = f"https://www.veronicaleiloes.com.br{card.find("div", class_="card-header card-header-image").find("a").get("href")}"
+        link = f"https://www.veronicaleiloes.com.br{card.find('div', class_='card-header card-header-image').find('a').get('href')}"
         img_cover = card.find("div", class_="card-header card-header-image").find("a").find("img").get("src")
         name = card.find("div", class_="card-body").find("h6").text.lstrip().rstrip()
         value = float(card.find("div", class_="card-body").find("p").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
@@ -2021,8 +2021,8 @@ def centraljudicial():
 
     data = []
     for card in cards:
-        link = f"https://www.centraljudicial.com.br/{card.find("div", class_="col-lg-8 col-sm-12 px-lg-1").get("onclick").split('\'')[1]}"
-        img_cover = f"https://www.centraljudicial.com.br/{card.find("div", class_="col-12 m-0 pb-1").find("img").get("src")}"
+        link = f"https://www.centraljudicial.com.br/{card.find('div', class_='col-lg-8 col-sm-12 px-lg-1').get('onclick').split('\'')[1]}"
+        img_cover = f"https://www.centraljudicial.com.br/{card.find('div', class_='col-12 m-0 pb-1').find('img').get('src')}"
         descricao = card.find_all("div", class_="lote-descricao")[-1].find("p").text
         name = f"{descricao[:50]}..."#Site não tem nome do imóvel, então peguei os 50 primeiros caracteres da descrição
         
@@ -2065,8 +2065,8 @@ def simonleiloes():
 
     data = []
     for card in cards:
-        img_cover = f"https://www.simonleiloes.com.br{card.find("div", class_="col-md-3 infolote").find("a", class_="imglote").find("img", class_="imglote").get("src")}"
-        link = f"https://www.simonleiloes.com.br{card.find("div", class_="col-md-3 infolote").find("a", class_="imglote").get("href")}"
+        img_cover = f"https://www.simonleiloes.com.br{card.find('div', class_='col-md-3 infolote').find('a', class_='imglote').find('img', class_='imglote').get('src')}"
+        link = f"https://www.simonleiloes.com.br{card.find('div', class_='col-md-3 infolote').find('a', class_='imglote').get('href')}"
         descricao = card.find("div", class_="textoDescricaoLote").find("p").text
         name = f"{descricao[:50]}..." #site não tem nome, então usei os 50 primeiros caracteres da descrição
         values = card.find("div", class_="valorlote").find_all("p")
@@ -2176,7 +2176,7 @@ def trileiloes():
     
     data = []
     for card in cards: 
-        link = f"https://www.trileiloes.com.br{card.find("div", class_="fotos-lotes").find("div", class_="item-img").find("a").get("href")}"
+        link = f"https://www.trileiloes.com.br{card.find('div', class_='fotos-lotes').find('div', class_='item-img').find('a').get('href')}"
         img_cover = card.find("div", class_="fotos-lotes").find("div", class_="item-img").find("a").find("img").get("src")
         address = card.find("span", style="left: -3px; width: 100%; white-space: nowrap;").text.replace("\n", " ").lstrip().rstrip()
         while "  " in address:
@@ -2229,7 +2229,7 @@ def alfaleiloes():
 
     data = []
     for card in cards:
-        link = f"https://www.alfaleiloes.com{card.find("div", class_="card-image").find("a").get("href")}"
+        link = f"https://www.alfaleiloes.com{card.find('div', class_='card-image').find('a').get('href')}"
         img_cover = card.find("div", class_="card-image").find("a").find("img").get("src")
         name = card.find("div", class_="card-content").text.lstrip().rstrip()
         if "volkswagem" in name.lower() or "chevrolet" in name.lower() or "trator" in name.lower() or "ford" in name.lower() or "impressora" in name.lower() or "diversos" in name.lower() or "itens" in name.lower() or "égua" in name.lower() or "egua" in name.lower() or "domiciliar" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "lancha" in name.lower() or "yamaha" in name.lower() or "citroen" in name.lower() or "renault" in name.lower() or "relógio" in name.lower() or "relógios" in name.lower() or "nissan" in name.lower():
@@ -2308,7 +2308,7 @@ def wspleiloes():
     
     data = []
     for card in cards:
-        link = f"https://www.wspleiloes.com.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
+        link = f"https://www.wspleiloes.com.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
         img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
         
         soup = get_requests(link)
@@ -2352,8 +2352,8 @@ def fidalgoleiloes():
     data = []
     for card in cards:
         address = card.find("div", class_="loteCartaBens").find("div", class_="mb-2").text.replace("Local:", "").lstrip().rstrip()
-        link = f"https://www.fidalgoleiloes.com.br/{card.find("div", class_="d-block lote-imagem").find("a").get("href")}"
-        img_cover = f"https://www.fidalgoleiloes.com.br/{card.find("div", class_="d-block lote-imagem").find("a").find("img").get("href")}"
+        link = f"https://www.fidalgoleiloes.com.br/{card.find('div', class_='d-block lote-imagem').find('a').get('href')}"
+        img_cover = f"https://www.fidalgoleiloes.com.br/{card.find('div', class_='d-block lote-imagem').find('a').find('img').get('href')}"
         name = card.find("div", class_="loteCartaBens").find("div", style="min-height: 60px").text.lstrip().rstrip()
         value = float(card.find("div", class_="loteCartaBens").find("div", class_="loteCartaInicial pt-1").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
@@ -2752,11 +2752,11 @@ def valerioiaminleiloes():
     data = []
     for card in cards:
         name = card.find("h4", class_="card-title").text.split("-")[1].lstrip().rstrip()
-        link = f"https://www.valerioiaminleiloes.com.br{card.find("div", class_="col-12 col-lg-4").find("a").get("href")}"
+        link = f"https://www.valerioiaminleiloes.com.br{card.find('div', class_='col-12 col-lg-4').find('a').get('href')}"
         if "http" in card.find("div", class_="col-12 col-lg-4").find("a").find("img").get("src"):
             img_cover = card.find("div", class_="col-12 col-lg-4").find("a").find("img").get("src")
         else:
-            img_cover = f"https://www.valerioiaminleiloes.com.br{card.find("div", class_="col-12 col-lg-4").find("a").find("img").get("src")}"
+            img_cover = f"https://www.valerioiaminleiloes.com.br{card.find('div', class_='col-12 col-lg-4').find('a').find('img').get('src')}"
         
         soup = get_requests(link)
 
@@ -2803,7 +2803,7 @@ def renovarleiloes():
     
     data = []
     for card in cards:
-        link = f"https://www.renovarleiloes.com.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
+        link = f"https://www.renovarleiloes.com.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
         img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
         
         soup = get_requests(link)
@@ -2846,10 +2846,10 @@ def agenciadeleiloes():
     data = []
     for card in cards:
         try:
-            link = f"https://www.agenciadeleiloes.com.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
+            link = f"https://www.agenciadeleiloes.com.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
             img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
         except:  # noqa: E722
-            link = f"https://www.agenciadeleiloes.com.br{card.find("div", class_="card-header card-header-image").find("a").get("href")}"
+            link = f"https://www.agenciadeleiloes.com.br{card.find('div', class_='card-header card-header-image').find('a').get('href')}"
             img_cover = card.find("div", class_="card-header card-header-image").find("img").get("src")
         soup = get_requests(link)
         name = soup.find("h4", class_="card-title").text.replace("\n", "").lstrip().rstrip()
@@ -3035,7 +3035,7 @@ def superbid():
 
     data = []
     for card in cards:
-        link = f"https://www.superbid.net{card.find("div", class_="react-swipeable-view-container").find("a").get("href")}"
+        link = f"https://www.superbid.net{card.find('div', class_='react-swipeable-view-container').find('a').get('href')}"
         img_cover = card.find("div", class_="react-swipeable-view-container").find("a").find("img").get("src")
         
         soup = get_selenium(link)
@@ -3115,7 +3115,7 @@ def tonialleiloes():
                         break
                 for card in cards_page:
                     cards.append(card)
-                url = f"https://www.tonialleiloes.com.br{soup.find("a", class_="page-link navigation__next").get("href")}"
+                url = f"https://www.tonialleiloes.com.br{soup.find('a', class_='page-link navigation__next').get('href')}"
                 x+=1
             except:  # noqa: E722
                 break
@@ -3132,9 +3132,9 @@ def tonialleiloes():
                 pass
         link = None
         try:
-            link = f"https://www.tonialleiloes.com.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
+            link = f"https://www.tonialleiloes.com.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
         except:  # noqa: E722
-            link = f"https://www.tonialleiloes.com.br{card.find("div", class_="card-header card-header-image").find("a").get("href")}"
+            link = f"https://www.tonialleiloes.com.br{card.find('div', class_='card-header card-header-image').find('a').get('href')}"
         soup = get_requests(link)
         name = soup.find("h4", class_="card-title").text.replace("\n", "").lstrip().rstrip()
         value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
@@ -3341,7 +3341,7 @@ def saraivaleiloes():
 
     data = []
     for card in cards:
-        link = f"https://www.saraivaleiloes.com.br{card.find("a", class_="lote-image").get("href")}"
+        link = f"https://www.saraivaleiloes.com.br{card.find('a', class_='lote-image').get('href')}"
         print(link)
         imgs = card.find("a", class_="lote-image").find("div", class_="image").get("style").split(";")
         for img in imgs:
@@ -3388,7 +3388,7 @@ def kleiloes():
     
     cards = []
     for card in cards_ini:
-        card = f"https://www.kleiloes.com.br/{card.get("href")}"
+        card = f"https://www.kleiloes.com.br/{card.get('href')}"
         soup = get_requests(card)
 
         try:
@@ -4039,15 +4039,15 @@ def nsleiloes():
     data = []
     for card in cards:
         try:
-            link = f"https://www.nsleiloes.lel.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
+            link = f"https://www.nsleiloes.lel.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
             img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
         except:  # noqa: E722
             try:
-                link = f"https://www.nsleiloes.lel.br{card.find("div", class_="card-header card-header-image").find("a").get("href")}"
+                link = f"https://www.nsleiloes.lel.br{card.find('div', class_='card-header card-header-image').find('a').get('href')}"
                 img_cover = card.find("div", class_="card-header card-header-image").find("img").get("src")
             except: # noqa: E722
-                link = f"https://www.nsleiloes.lel.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
-                img_cover = f"https://www.nsleiloes.lel.br{card.find("div", class_="front").find("img").get("src")}"
+                link = f"https://www.nsleiloes.lel.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
+                img_cover = f"https://www.nsleiloes.lel.br{card.find('div', class_='front').find('img').get('src')}"
         soup = get_requests(link)
         name = soup.find("h4", class_="card-title").text.replace("\n", "").lstrip().rstrip()
         value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
@@ -4253,7 +4253,7 @@ def montenegroleiloes():
     
     data = []
     for card in cards:
-        link = f"https://www.montenegroleiloes.com.br{card.find("div", class_="image").find("a").get("href")}"
+        link = f"https://www.montenegroleiloes.com.br{card.find('div', class_='image').find('a').get('href')}"
         img_cover = card.find("div", class_="image").find("a").find("img").get("src")
         name = card.find("div", class_="infos").find("h3").text.lstrip().rstrip()
         if "chevrolet" in name.lower() or "fiat" in name.lower() or "citroen" in name.lower() or "honda" in name.lower() or "suzuki" in name.lower() or "ford" in name.lower() or "nissan" in name.lower() or "hyundai""vw" in name.lower() or "guerra" in name.lower() or "randon" in name.lower() or "kia" in name.lower() or "renault" in name.lower() or "peugeot" in name.lower() or "mercedes" in name.lower() or "jeep" in name.lower() or "toyota" in name.lower() or "maquina" in name.lower() or "máquina" in name.lower() or "notebook" in name.lower() or "cadeira" in name.lower() or "carrinho" in name.lower() or "forno" in name.lower() or "rack" in name.lower() or "refresqueira" in name.lower() or "estante" in name.lower() or "mesa" in name.lower() or "lava" in name.lower() or "cafeteira" in name.lower() or "expositora" in name.lower() or "gerador" in name.lower() or "peças" in name.lower() or "empilhadeira" in name.lower() or "gm" in name.lower() or "kasinski" in name.lower() or "aeronave" in name.lower():
@@ -4423,7 +4423,7 @@ def eleiloero():
     for card in cards:
         os.system("cls")
         print(card)
-        link = f"https://www.e-leiloeiro.com.br{card.find("a", class_="column-11-copy w-col w-col-3 lote-thumb").get("href")}"
+        link = f"https://www.e-leiloeiro.com.br{card.find('a', class_='column-11-copy w-col w-col-3 lote-thumb').get('href')}"
         imgs = card.find("a", class_="column-11-copy w-col w-col-3 lote-thumb").get("style").split(";")
         for img in imgs:
             if "http" in img:
