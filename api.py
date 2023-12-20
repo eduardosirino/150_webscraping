@@ -1,3 +1,4 @@
+from doctest import debug
 from flask import Flask
 import os
 import shutil
@@ -32,4 +33,4 @@ def executar_tarefa(codigo):
         return "Código incorreto!", 403
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=60000)
+    app.run(host="0.0.0.0", port=60000, debug=True)
