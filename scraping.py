@@ -2021,7 +2021,8 @@ def centraljudicial():
 
     data = []
     for card in cards:
-        link = f"https://www.centraljudicial.com.br/{card.find('div', class_='col-lg-8 col-sm-12 px-lg-1').get('onclick').split('\'')[1]}"
+        part_link = card.find('div', class_='col-lg-8 col-sm-12 px-lg-1').get('onclick').split("'")[1]
+        link = f"https://www.centraljudicial.com.br/{part_link}"
         img_cover = f"https://www.centraljudicial.com.br/{card.find('div', class_='col-12 m-0 pb-1').find('img').get('src')}"
         descricao = card.find_all("div", class_="lote-descricao")[-1].find("p").text
         name = f"{descricao[:50]}..."#Site não tem nome do imóvel, então peguei os 50 primeiros caracteres da descrição
