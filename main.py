@@ -47,7 +47,7 @@ def main():
         print(agora.hour, agora.minute, agora.weekday())
         if agora.hour == 1 and agora.minute == 0 and agora.weekday() in [0, 2, 4]:  # Segunda, Quarta, Sexta
             fazer_git_pull()
-        if agora.hour == 9 and agora.minute == 30 and agora.weekday() in [0, 2, 4]:
+        if agora.hour == 9 and agora.minute == 50 and agora.weekday() in [0, 2, 4]:
             os.system("clear")
             executar_leiloes()
         time.sleep(60)  # Espera 1 minuto antes de verificar novamente
