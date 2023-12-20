@@ -41,4 +41,4 @@ def analyse():
     return flask.jsonify({'result': result})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=500000)
+    app.run(host='0.0.0.0', port=50000)
