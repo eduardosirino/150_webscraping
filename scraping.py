@@ -4484,42 +4484,6 @@ def eleiloero():
         data.append(data_unit)
     return data
 
-def sfrazao():
-    soup = get_requests("https://sfrazao.com.br/pesquisa.php?classificacao=&uf=&cidade=&bairro=")
-    cards = soup.find_all("div", class_="col-md-6 col-lg-3 mb-4")
-
-    data = []
-    for card in cards:
-        link = 
-        img_cover = 
-        name = 
-
-        appraisal_value = 
-        value = 
-
-        soup = get_requests(link)
-        descricao = 
-        areas = get_areas(descricao)
-        area_util = areas[0]
-        area_total = areas[1]
-
-        address = 
-
-        data_unit = {"Site": "SFrazao",
-                    "Nome": name,
-                    "Endereço": address,
-                    "Área Útil": area_util,
-                    "Área Total": area_total,
-                    "Valor": value,
-                    "Valor da Avaliação": appraisal_value,
-                    "Link oferta": link,
-                    "Link imagem da capa": img_cover
-                    }
-        data.append(data_unit)
-    return data
-
-
-
 
 if __name__ == "__main__":
     #controle
@@ -4584,7 +4548,6 @@ if __name__ == "__main__":
     #montenegroleiloes() 56
     #agostinholeiloes() 57
     #eleiloero() 58
-    sfrazao()
 
 
 
