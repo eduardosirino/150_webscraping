@@ -44,6 +44,7 @@ def fazer_git_pull():
 def main():
     while True:
         agora = datetime.now()
+        print(agora.hour, agora.minute, agora.weekday())
         if agora.hour == 1 and agora.minute == 0 and agora.weekday() in [0, 2, 4]:  # Segunda, Quarta, Sexta
             fazer_git_pull()
         if agora.hour == 9 and agora.minute == 30 and agora.weekday() in [0, 2, 4]:
