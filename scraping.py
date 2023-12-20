@@ -3288,7 +3288,7 @@ def leilaobrasil():
 
     data = []
     for card in cards:
-        link = f"https://www.leilaobrasil.com.br/{card.find("a").get("href")}"
+        link = f"https://www.leilaobrasil.com.br/{card.find('a').get('href')}"
         infos = card.find("a").find("div", class_="imagem").find("span", class_="d-flex w-100").get("style").split(";")
         for info in infos:
             if "arquivos" in info:
