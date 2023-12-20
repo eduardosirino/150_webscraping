@@ -1,51 +1,44 @@
-from flask import Flask, request, jsonify
-import tensorflow as tf
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 import numpy as np
+import flask
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LinearRegression
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
 
 # Exemplo de dados de treinamento (normalmente, isso seria feito offline)
-dados = [
-    {"texto": "Imóvel com área útil de 120 m² e área total de 200 m².", "area_util": 120, "area_total": 200},
+data = [
+    {"text": "Imóvel com área útil de 120 m² e área total de 200 m².", "area_util": 120, "area_total": 200},
     # Mais dados...
 ]
 
 # Função de pré-processamento
-def preprocessar_textos(textos):
-    tokenizer = Tokenizer()
-    tokenizer.fit_on_texts(textos)
-    return pad_sequences(tokenizer.texts_to_sequences(textos))
+def preprocess_text(text):
+    vectorizer = TfidfVectorizer()
+    return vectorizer.fit_transform([text])
 
 # Preparação dos dados
-textos = [d["texto"] for d in dados]
-X = preprocessar_textos(textos)
-Y = np.array([[d['area_util'], d['area_total']] for d in dados])
+texts = [d["text"] for d in data]
+X = preprocess_text(texts)
+Y = np.array([[d['area_util'], d['area_total']] for d in data])
 
 # Construção do Modelo
-model = tf.keras.models.Sequential([
-    tf.keras.layers.Embedding(input_dim=len(tokenizer.word_index)+1, output_dim=64),
-    tf.keras.layers.GlobalAveragePooling1D(),
-    tf.keras.layers.Dense(2, activation='linear')
-])
+model = LinearRegression()
 
 # Treinamento do Modelo (normalmente, isso seria feito offline)
-model.compile(optimizer='adam', loss='mean_squared_error')
-model.fit(X, Y, epochs=10)
+model.fit(X, Y)
 
 # Função para fazer previsões
-def prever(texto):
-    processed_text = preprocessar_textos([texto])
-    predicao = model.predict(processed_text)[0]
-    return [None if np.isnan(x) else x for x in predicao]
+def predict(text):
+    processed_text = preprocess_text(text)
+    prediction = model.predict(processed_text)
+    return [None if np.isnan(x) else x for x in prediction]
 
-@app.route('/analise', methods=['POST'])
-def analise():
-    data = request.json
-    texto = data.get('texto', '')
-    resultado = prever(texto)
-    return jsonify({'resultado': resultado})
+@app.route('/analyse', methods=['POST'])
+def analyse():
+    data = flask.request.json
+    text = data.get('text', '')
+    result = predict(text)
+    return flask.jsonify({'result': result})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=500000)

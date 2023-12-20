@@ -16,6 +16,8 @@ def update_db (data, site):
     pass
 
 def get_areas (texto):
+    with open("text_ia.txt", 'a') as file:
+        file.write(f"'{texto}'," + '\n')
     data=[0, 0]
     return data
 
@@ -1713,6 +1715,7 @@ def krobelleiloes():
         link = f"https://www.krobelleiloes.com.br/pregao/{id_leilao[-3]}/{id_leilao[-2]}"
         name = card.find("div").find("h4").text
         if "fiesta" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower():
+            continue
         soup = get_selenium(link)
 
         values_list = []
@@ -1760,7 +1763,8 @@ def mazzollileiloes():
         id_leilao = img_cover.split("/")
         link = f"https://mazzollileiloes.com.br/pregao/{id_leilao[-3]}/{id_leilao[-2]}"
         name = card.find("div").find("h4").text
-
+        if "bmw" in name.lower() or "semirreboque" in name.lower() or "huwo" in name.lower() or "carregadeira" in name.lower() or "librelato" in name.lower() or "renault" in name.lower() or "caminhão" in name.lower() or "vw" in name.lower() or "gm" in name.lower() or "maquina" in name.lower() or "maquinas" in name.lower() or "multifuncional" in name.lower() or "cherry" in name.lower() or "estoquinete" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "fiesta" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "yamaha" in name.lower() or "peugeot" in name.lower() or "toyota" in name.lower() or "hyundai" in name.lower() or "equipamento" in name.lower() or "renault" in name.lower() or "cadeira" in name.lower() or "cadeiras""audi" in name.lower():
+            continue
         soup = get_selenium(link)
 
         values_list = []
@@ -1808,7 +1812,8 @@ def oesteleiloes():
         id_leilao = img_cover.split("/")
         link = f"https://www.oesteleiloes.com.br/pregao/{id_leilao[-3]}/{id_leilao[-2]}"
         name = card.find("div").find("h4").text
-
+        if "chevrolet" in name.lower() or "citroen" in name.lower() or "fiat" in name.lower() or "hyundai" in name.lower() or "gm" in name.lower() or "nissan" in name.lower() or "chevrolet" in name.lower() or "yamaha" in name.lower() or "honda" in name.lower() or "ford" in name.lower():
+            continue
         soup = get_selenium(link)
 
         values_list = []
@@ -1857,6 +1862,8 @@ def nordesteleiloes():
         link = f"https://www.nordesteleiloes.com.br{link}"
         img_cover = card.find("div", class_="react-swipeable-view-container").find("a").find("img").get("src")
         name = card.get("data-auction-category").lstrip().rstrip()
+        if "equipamentos" in name.lower() or "equipamento" in name.lower() or "sucata" in name.lower() or "sucatas" in name.lower() or "impressora" in name.lower() or "impressoras" in name.lower() or "equipamentos" in name.lower():
+            continue
         value = float(card.find("p", class_="MuiTypography-root MuiTypography-body1 jss363 css-z355qp").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         address = card.find("p", class_="MuiTypography-root MuiTypography-body1 jss370 css-z355qp").text.lstrip().rstrip()
         
@@ -1897,6 +1904,8 @@ def portellaleiloes():
         link = card.find("header").find("a").get("href")
         img_cover = card.find("header").find("a").find("img").get("src")
         name = card.find("header").find("h2", class_="bid-title").text.lstrip().rstrip()
+        if "equipamentos" in name.lower() or "equipamento" in name.lower() or "sucata" in name.lower() or "sucatas" in name.lower() or "impressora" in name.lower() or "impressoras" in name.lower() or "equipamentos" in name.lower():
+            continue
         address = card.find("div", class_="bid-details").find("p", class_="bid-description").text.lstrip().rstrip()
         if "rua" not in address.lower() and "terreno" not in address.lower() and "avenida" not in address.lower():
             address = None
@@ -1953,6 +1962,8 @@ def rochaleiloes():
         img_cover = card.find("div", class_="relative").find("a").find("img").get("src")
         address = card.find("div", class_="px-4 uppercase text-center font-bold text-site-box-cidade dark:text-site-box-cidade-dark py-2 text-[1.25rem]").find("span").text.lstrip().rstrip()
         name = card.find("a", class_="font-bold text-site-box-titulo dark:text-site-box-titulo-dark")
+        if "vw""sucata" in name.lower() or "ford" in name.lower() or "honda" in name.lower() or "ford" in name.lower() or "furadeira" in name.lower() or "fiat" in name.lower() or "audi" in name.lower() or "gol" in name.lower() or "benz" in name.lower():
+            continue
 
         values = []
         values_inf = card.find("div", class_="flex-1 text-center").find_all("span")
@@ -2000,8 +2011,13 @@ def rochaleiloes():
     return data
 
 def centraljudicial():
-    soup = get_requests("https://www.centraljudicial.com.br/pesquisa.php?classificacao=&uf=&cidade=&bairro=")
-    cards = soup.find_all("div", class_="mb-4 lotePadrao rounded lote-borda")
+    cards = []
+    urls = ["https://www.centraljudicial.com.br/pesquisa.php?classificacao=1_2&uf=&cidade=&bairro=", "https://www.centraljudicial.com.br/pesquisa.php?classificacao=1_1&uf=&cidade=&bairro="]
+    for url in urls:
+        soup = get_requests(url)
+        cards_page = soup.find_all("div", class_="mb-4 lotePadrao rounded lote-borda")
+        for card in cards_page:
+            cards.append(card)
 
     data = []
     for card in cards:
@@ -2039,7 +2055,7 @@ def centraljudicial():
     return data
 
 def simonleiloes():
-    urls = ["https://www.simonleiloes.com.br/categoria/imoveis-urbanos", "https://www.simonleiloes.com.br/categoria/imoveis-rurais", "https://www.simonleiloes.com.br/categoria/automoveis", "https://www.simonleiloes.com.br/categoria/Onibus", "https://www.simonleiloes.com.br/categoria/motos", "https://www.simonleiloes.com.br/categoria/sucatas", "https://www.simonleiloes.com.br/categoria/aerogerador", "https://www.simonleiloes.com.br/categoria/outros"]
+    urls = ["https://www.simonleiloes.com.br/categoria/imoveis-urbanos", "https://www.simonleiloes.com.br/categoria/imoveis-rurais"]
     cards = []
     for url in urls:
         soup = get_requests(url)
@@ -2081,7 +2097,7 @@ def simonleiloes():
     return data
 
 def nogarileiloes():
-    urls = ["https://www.nogarileiloes.com.br/lotes/imovel", "https://www.nogarileiloes.com.br/lotes/diversos", "https://www.nogarileiloes.com.br/lotes/veiculo"]
+    urls = ["https://www.nogarileiloes.com.br/lotes/imovel"]
     cards = []
     for url in urls:
         soup = get_requests(url)
@@ -2170,6 +2186,8 @@ def trileiloes():
         name = soup.find("div", class_="g-right").find("div", class_="r3").text.lstrip().rstrip().replace("\n", " ")
         while "  " in name:
             name = name.replace("  ", " ")
+        if "automovel" in name.lower() or "automóvel" in name.lower():
+            continue
         
         values_pts = soup.find("div", class_="g-right").find("div", class_="r2").text.split("\n\n")
         for value_pt in values_pts:
@@ -2214,6 +2232,8 @@ def alfaleiloes():
         link = f"https://www.alfaleiloes.com{card.find("div", class_="card-image").find("a").get("href")}"
         img_cover = card.find("div", class_="card-image").find("a").find("img").get("src")
         name = card.find("div", class_="card-content").text.lstrip().rstrip()
+        if "volkswagem" in name.lower() or "chevrolet" in name.lower() or "trator" in name.lower() or "ford" in name.lower() or "impressora" in name.lower() or "diversos" in name.lower() or "itens" in name.lower() or "égua" in name.lower() or "egua" in name.lower() or "domiciliar" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "lancha" in name.lower() or "yamaha" in name.lower() or "citroen" in name.lower() or "renault" in name.lower() or "relógio" in name.lower() or "relógios" in name.lower() or "nissan" in name.lower():
+            continue
 
         values = []
         value = None
@@ -2268,120 +2288,50 @@ def alfaleiloes():
 
 def wspleiloes():
 
-    soup = get_selenium("https://www.wspleiloes.com.br/")
+    cards = []
     
-    cards = soup.find_all("div", class_="col-md-6 col-lg-4 col-xl-3 p-2")
-
+    urls = ["https://www.wspleiloes.com.br/lotes/imovel"]
+    for url in urls:
+        x = 1
+        while True:
+            try:
+                soup = get_requests(f"{url}?page_a={x}")
+                cards_page = soup.find_all("div", class_="col-12 col-md-6 col-lg-4 col-xl-3")
+                if len(cards_page) > 0:
+                    for card in cards_page:
+                        cards.append(card)
+                    x += 1
+                else:
+                    break
+            except:  # noqa: E722
+                break
+    
     data = []
     for card in cards:
-        img_cover = card.find("img", class_="my-auto").get("src")
-        name = card.find("h6", class_="card-title m-0").text
-        link = card.find("div", class_="card-body d-flex flex-column").find("a").get("href")
-        link_card = card.find("div").find("div").find("a").get("href")
-        link_details = get_requests(link_card).find("a", class_="btn btn-block btn-dark").get("href")
-        infos = get_requests(link_details)
-
-        try:
-            address = infos.find("div", class_="mb-3 p-2 border rounded text-justify").find("div").text.split('\n')
-            for linha in address:
-                if "Cidade:" in linha:
-                    city1 = linha.split("Cidade:")
-
-                    if len(city1) > 1:
-                        city = city1[1].strip()
-                        
-                if "Endereço:" in linha:
-                    address_p = linha.split("Endereço:")
-
-                    if len(address_p) > 1:
-                        address1 = address_p[1].strip()
-                        break
-            address = f"{address1}, {city}"
-
-        except:  # noqa: E722
-            address = ""
-
-        infos2 = infos.find_all("div", class_="my-2 p-2 border rounded text-center")[2]
-        try:
-            initial_bids = infos2.find_all(string=re.compile("Lance Inicial:"))
-
-            values = [re.search(r'R\$(\d+.\d+,\d+)', bid).group(1) for bid in initial_bids]
-            value1, value2 = float(values[0].replace("R$", "")), float(values[1].replace("R$", ""))
-            value = min(value1.replace('.', '').replace(',', '.'), value2.replace('.', '').replace(',', '.'))
-        except:  # noqa: E722
-            infos3 = infos2.find_all("h6", class_="text-center border-top p-2 m-0")
-            for info in infos3:
-                linhas = info.text.split('\n')
-                for linha in linhas:
-                    if "Lance Inicial:" in linha:
-                        value1 = linha.split("Lance Inicial:")
-
-                        if len(value1) > 1:
-                            value = float(value1[1].strip().replace("R$", "").replace('.', '').replace(',', '.'))
+        link = f"https://www.wspleiloes.com.br{card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")}"
+        img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
         
-        appraisal_value = None
-        try:
-            for info in infos2:
-                linhas = info.get_text().split('\n')
-                for linha in linhas:
-                    if "Valor de Avaliação:" in linha:
-                        value1 = linha.split("Valor de Avaliação:")
-                        if len(value1) > 1:
-                            appraisal_value = float(value1[1].strip().replace("R$", "").replace('.', '').replace(',', '.'))
-        except:  # noqa: E722
-            appraisal_value = 0
+        soup = get_requests(link)
+        name = soup.find("h4", class_="card-title").text.replace("\n", "").lstrip().rstrip()
+        value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        appraisal_value = float(soup.find("div", class_="card-body text-center").find("h4").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
-        area_util = None
-        area_total = None
-        
-        try:
-            descricao_div = infos.find("div", class_="col-12 col-lg-8 p-1 float-left")
-            
-            if descricao_div:
-                descricao_texto = descricao_div.get_text()  # Captura todo o texto dentro do div
+        descricao = soup.find("div", class_="col-12 descricao").text
+        areas = get_areas(descricao)
+        area_util = areas[0]
+        area_total = areas[1]
 
-                # Tentar encontrar a área privativa/útil
-                area_util_match = re.search(r'área (privativa|útil) de ([\d,\.]+)m2', descricao_texto)
-                area_util = area_util_match.group(2) if area_util_match else None
-
-                # Tentar encontrar a área total
-                area_total_match = re.search(r'total de ([\d,\.]+)m2', descricao_texto)
-                area_total = area_total_match.group(1) if area_total_match else None
-            else:
-                result = chat_gpt(descricao_texto)
-                try:
-                    result = result.split('\n')
-                except:  # noqa: E722
-                    try:
-                        result = result.split(' ')
-                    except:  # noqa: E722
-                        pass
-
-                try:
-                    area_util = result[0]
-                except:  # noqa: E722
-                    area_util = None
-                
-                try:
-                    area_total = result[1]
-                except:  # noqa: E722
-                    area_total = None
-
-        except Exception as e:
-            print(f"Ocorreu um erro: {e}")
-            area_util = None
-            area_total = None
-
-        data_unit = {"Site": "WspLeiloes",
-                     "Nome": name,
-                     "Endereço": address,
-                     "Área Útil": area_util,
-                     "Área Total": area_total,
-                     "Valor": value,
-                     "Valor da Avaliação": appraisal_value,
-                     "Link oferta": link,
-                     "Link imagem da capa": img_cover
-                     }
+        address = None #não tem campo no site
+        data_unit = {"Site": "WSPLeiloes",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
         data.append(data_unit)
     return data
 
@@ -2390,7 +2340,7 @@ def fidalgoleiloes():
     cards = []
     while True:
         try:
-            soup = get_requests(f"https://www.fidalgoleiloes.com.br/pesquisa.php?nothing=&pagina={x}")
+            soup = get_requests(f"https://www.fidalgoleiloes.com.br/pesquisa.php?chk%5B%5D=1.0&chk%5B%5D=1.1&chk%5B%5D=1.2&chk%5B%5D=1.3&sliderValue0=1&sliderValue1=9000000&openFilter=1&pagina={x}")
             cards_page = soup.find_all("div", class_="col-md-6 col-lg-4 mb-4")
             verify = cards_page[0].find("div", class_="loteCartaBens").find("div", class_="mb-2").text.replace("Local:", "").lstrip().rstrip()  # noqa: F841
             for card in cards_page:
@@ -2447,6 +2397,8 @@ def damianileiloes():
         id_leilao = img_cover.split("/")
         link = f"https://www.damianileiloes.com.br/pregao/{id_leilao[-3]}/{id_leilao[-2]}"
         name = card.find("div").find("h4").text
+        if "empacotadora" in name.lower() or "forno" in name.lower() or "roseteira" in name.lower() or "pneumática" in name.lower() or "fornos" in name.lower() or "produção" in name.lower():
+            continue
 
         soup = get_selenium(link)
 
@@ -2496,7 +2448,7 @@ def damianileiloes():
     return data
 
 def joaoemilio():
-    urls = ["https://joaoemilio.com.br/lotes/imovel?tipo=imovel&page=", "https://joaoemilio.com.br/lotes/veiculo?tipo=veiculo&page=", "https://joaoemilio.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://joaoemilio.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -2609,7 +2561,7 @@ def joaoemilio():
     return data
 
 def cravoleiloes():
-    urls = ["https://www.cravoleiloes.com.br/lotes/imovel?tipo=imovel&page=", "https://www.cravoleiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://www.cravoleiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://www.cravoleiloes.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -2732,6 +2684,8 @@ def topleiloes():
         id_leilao = img_cover.split("/")
         link = f"https://www.topleiloes.com.br/pregao/{id_leilao[-3]}/{id_leilao[-2]}"
         name = card.find("div").find("h4").text
+        if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
+            continue
 
         soup = get_selenium(link)
 
@@ -2785,7 +2739,7 @@ def topleiloes():
     return data
 
 def valerioiaminleiloes():
-    soup = get_requests("https://www.valerioiaminleiloes.com.br/leilao/proximos")
+    soup = get_requests("https://www.valerioiaminleiloes.com.br/leilao/lotes/imoveis")
     cards_lotes = soup.find_all("div", class_="col-12 col-sm-4 col-xl-3")
     
     cards = []
@@ -2831,7 +2785,7 @@ def valerioiaminleiloes():
 def renovarleiloes():
     cards = []
     
-    urls = ["https://www.renovarleiloes.com.br/leilao/lotes/imoveis", "https://www.renovarleiloes.com.br/leilao/lotes/diversos", "https://www.renovarleiloes.com.br/leilao/lotes/eletronicos", "https://www.renovarleiloes.com.br/leilao/lotes/embarcacao", "https://www.renovarleiloes.com.br/leilao/lotes/equipamentos", "https://www.renovarleiloes.com.br/leilao/lotes/maquinas", "https://www.renovarleiloes.com.br/leilao/lotes/semoventes", "https://www.renovarleiloes.com.br/leilao/lotes/sucatas", "https://www.renovarleiloes.com.br/leilao/lotes/veiculos"]
+    urls = ["https://www.renovarleiloes.com.br/leilao/lotes/imoveis"]
     for url in urls:
         x = 1
         while True:
@@ -2879,7 +2833,7 @@ def renovarleiloes():
 def agenciadeleiloes():
     cards = []
     
-    urls = ["https://www.agenciadeleiloes.com.br/leilao/lotes/imoveis", "https://www.agenciadeleiloes.com.br/leilao/lotes/arte", "https://www.agenciadeleiloes.com.br/leilao/lotes/arte-1", "https://www.agenciadeleiloes.com.br/leilao/lotes/diversos", "https://www.agenciadeleiloes.com.br/leilao/lotes/eletronicos", "https://www.agenciadeleiloes.com.br/leilao/lotes/equipamentos", "https://www.agenciadeleiloes.com.br/leilao/lotes/escultura", "https://www.agenciadeleiloes.com.br/leilao/lotes/escultura-1", "https://www.agenciadeleiloes.com.br/leilao/lotes/maquinas", "https://www.agenciadeleiloes.com.br/leilao/lotes/moveis", "https://www.agenciadeleiloes.com.br/leilao/lotes/sucatas", "https://www.agenciadeleiloes.com.br/leilao/lotes/veiculos"]
+    urls = ["https://www.agenciadeleiloes.com.br/leilao/lotes/imoveis"]
     for url in urls:
         try:
             soup = get_requests(url)
@@ -2926,8 +2880,8 @@ def agenciadeleiloes():
 
 def portalzuk():
     # Iniciar o display virtual
-    #display = Display(visible=0, size=(1024, 768))
-    #display.start()
+    display = Display(visible=0, size=(1024, 768))
+    display.start()
 
     chrome_options = Options()
     chrome_options.add_argument('--no-sandbox')
@@ -3033,90 +2987,7 @@ def superbid():
             "https://www.superbid.net/categorias/imoveis/imoveis-industriais",
             "https://www.superbid.net/categorias/imoveis/imoveis-rurais",
             "https://www.superbid.net/categorias/imoveis/imoveis-comerciais",
-            "https://www.superbid.net/categorias/imoveis/imoveis-residenciais",
-            "https://www.superbid.net/categorias/carros-motos/carros",
-            "https://www.superbid.net/categorias/carros-motos/partes-e-pecas-carros-e-motos",
-            "https://www.superbid.net/categorias/carros-motos/motos",
-            "https://www.superbid.net/categorias/embarcacoes-aeronaves/embarcacoes-e-navios",
-            "https://www.superbid.net/categorias/embarcacoes-aeronaves/pecas-e-acessorios",
-            "https://www.superbid.net/categorias/embarcacoes-aeronaves/helicopteros",
-            "https://www.superbid.net/categorias/caminhoes-onibus/onibus",
-            "https://www.superbid.net/categorias/caminhoes-onibus/partes-e-pecas-caminhoes-e-onibus",
-            "https://www.superbid.net/categorias/caminhoes-onibus/caminhoes",
-            "https://www.superbid.net/categorias/caminhoes-onibus/vans",
-            "https://www.superbid.net/categorias/caminhoes-onibus/impl-rod-e-carrocerias",
-            "https://www.superbid.net/categorias/maquinas-pesadas-agricolas/equip-de-pavimentacao",
-            "https://www.superbid.net/categorias/maquinas-pesadas-agricolas/maquinas-pesadas",
-            "https://www.superbid.net/categorias/maquinas-pesadas-agricolas/partes-e-pecas-maquinas-pesadas-e-agricolas",
-            "https://www.superbid.net/categorias/maquinas-pesadas-agricolas/equip-de-mineracao",
-            "https://www.superbid.net/categorias/maquinas-pesadas-agricolas/implementos-agricolas",
-            "https://www.superbid.net/categorias/maquinas-pesadas-agricolas/maquinas-agricolas",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-bens-de-consumo",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/hospitalares",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-grafica",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-moveleira",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-de-alimentos",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-eletronicos",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/tubulacoes-e-conexoes",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-textil",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-de-embalagens",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/construcao-civil",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/energia-usinas",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-farmaceutica",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/serraria",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-petro-quimico",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/ind-plastica",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/pecas-industriais",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/infraestrutura",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/laboratorios",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/equipos-de-limpieza",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/agronegocios",
-            "https://www.superbid.net/categorias/industrial-maquinas-equipamentos/metal-mecanica",
-            "https://www.superbid.net/categorias/movimentacao-transporte/transportadores",
-            "https://www.superbid.net/categorias/movimentacao-transporte/equipamentos",
-            "https://www.superbid.net/categorias/movimentacao-transporte/armazenagem",
-            "https://www.superbid.net/categorias/movimentacao-transporte/empilhadeiras",
-            "https://www.superbid.net/categorias/tecnologia/informatica",
-            "https://www.superbid.net/categorias/tecnologia/telefonia",
-            "https://www.superbid.net/categorias/tecnologia/eletronicos",
-            "https://www.superbid.net/categorias/eletrodomesticos/refrigeradores",
-            "https://www.superbid.net/categorias/eletrodomesticos/fornos-e-fogoes",
-            "https://www.superbid.net/categorias/eletrodomesticos/eletroportateis",
-            "https://www.superbid.net/categorias/eletrodomesticos/limpeza",
-            "https://www.superbid.net/categorias/materiais-para-construcao-civil/ferramentas",
-            "https://www.superbid.net/categorias/materiais-para-construcao-civil/materiais",
-            "https://www.superbid.net/categorias/materiais-para-construcao-civil/eletrica-e-iluminacao",
-            "https://www.superbid.net/categorias/cozinhas-e-restaurantes/restaurantes",
-            "https://www.superbid.net/categorias/cozinhas-e-restaurantes/cozinhas-industriais",
-            "https://www.superbid.net/categorias/moveis-e-decoracao/escritorio",
-            "https://www.superbid.net/categorias/moveis-e-decoracao/residencial",
-            "https://www.superbid.net/categorias/alimentos-e-bebidas/bebidas",
-            "https://www.superbid.net/categorias/alimentos-e-bebidas/alimentos",
-            "https://www.superbid.net/categorias/oportunidades/beneficentes",
-            "https://www.superbid.net/categorias/oportunidades/papelaria",
-            "https://www.superbid.net/categorias/oportunidades/pet",
-            "https://www.superbid.net/categorias/oportunidades/negocios",
-            "https://www.superbid.net/categorias/oportunidades/lazer",
-            "https://www.superbid.net/categorias/oportunidades/vestuarios",
-            "https://www.superbid.net/categorias/oportunidades/esportes",
-            "https://www.superbid.net/categorias/bolsas-canetas-joias-e-relogios/bolsas",
-            "https://www.superbid.net/categorias/bolsas-canetas-joias-e-relogios/acessorios",
-            "https://www.superbid.net/categorias/bolsas-canetas-joias-e-relogios/relogios",
-            "https://www.superbid.net/categorias/bolsas-canetas-joias-e-relogios/joias",
-            "https://www.superbid.net/categorias/bolsas-canetas-joias-e-relogios/tabacaria",
-            "https://www.superbid.net/categorias/artes-decoracao-colecionismo/pinturas",
-            "https://www.superbid.net/categorias/artes-decoracao-colecionismo/obras-de-arte",
-            "https://www.superbid.net/categorias/animais/equinos",
-            "https://www.superbid.net/categorias/animais/bovinos",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/sucatas-materiais",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/residuos",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/pecas-componentes",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/sucatas-metalicas",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/materiais-metalicos",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/sucatas-nao-ferrosos",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/sucatas-equipamentos",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/materia-prima",
-            "https://www.superbid.net/categorias/sucatas-materiais-residuos/mat-prod-quimicos",
+            "https://www.superbid.net/categorias/imoveis/imoveis-residenciais"
             ]
 
     cards = []
@@ -3203,7 +3074,7 @@ def superbid():
                     return None
                 value_dolar = response.json()["rates"]["BRL"]
                 if value_dolar is None:
-                    value = value
+                    value = value*5.1
                 else:
                     value = value * value_dolar
                 
@@ -3230,7 +3101,7 @@ def superbid():
 def tonialleiloes():
     cards = []
     
-    urls = ["https://www.tonialleiloes.com.br/leilao/lotes/imoveis", "https://www.tonialleiloes.com.br/leilao/lotes/maquinas-1", "https://www.tonialleiloes.com.br/leilao/lotes/sucatas", "https://www.tonialleiloes.com.br/leilao/lotes/veiculos", "https://www.tonialleiloes.com.br/leilao/lotes/diversos", "https://www.tonialleiloes.com.br/leilao/lotes/animais", "https://www.tonialleiloes.com.br/venda-direta"]
+    urls = ["https://www.tonialleiloes.com.br/leilao/lotes/imoveis"]
     for url in urls:
         x=1
         while True:
@@ -3296,7 +3167,7 @@ def tonialleiloes():
     return data
 
 def pimentelleiloes():
-    urls = ["https://www.pimentelleiloes.com.br/lotes/imovel?tipo=imovel&page=", "https://www.pimentelleiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://www.pimentelleiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://www.pimentelleiloes.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -3422,6 +3293,8 @@ def leilaobrasil():
             if "arquivos" in info:
                 img_cover = f"https://www.leilaobrasil.com.br/{info.lstrip().rstrip()}"
         name = card.find("a").get("title")
+        if "vacas" in name.lower() or "cadeiras" in name.lower() or "vw" in name.lower() or "gm" in name.lower() or "honda" in name.lower() or "ford" in name.lower() or "pinças" in name.lower() or "hyundai" in name.lower() or "sucata" in name.lower() or "randon" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "corsa" in name.lower() or "audi" in name.lower() or "benz" in name.lower() or "ônibus" in name.lower() or "nissan" in name.lower() or "trator" in name.lower() or "mula" in name.lower() or "palio" in name.lower() or "kombi" in name.lower() or "carreta" in name.lower() or "diversos" in name.lower() or "chevrolet" in name.lower() or "caminhão" in name.lower() or "caldeira" in name.lower() or "tijolo" in name.lower() or "tijolos" in name.lower() or "fiat" in name.lower():
+            continue
 
         soup = get_requests(link)
 
@@ -3438,7 +3311,7 @@ def leilaobrasil():
                 address = info.replace("Localização", " ").lstrip().rstrip()
 
         descricao = soup.find("div", id="descricao").text
-        print(descricao)
+
         areas = get_areas(descricao)
         area_util = areas[0]
         area_total = areas[1]
@@ -3457,7 +3330,7 @@ def leilaobrasil():
     return data
 
 def saraivaleiloes():
-    urls = ["https://www.saraivaleiloes.com.br/categoria/Im%C3%B3veis", "https://www.saraivaleiloes.com.br/categoria/Apartamentos", "https://www.saraivaleiloes.com.br/categoria/Comercial", "https://www.saraivaleiloes.com.br/categoria/Materiais", "https://www.saraivaleiloes.com.br/categoria/Diversos", "https://www.saraivaleiloes.com.br/categoria/Ve%C3%ADculos"]
+    urls = ["https://www.saraivaleiloes.com.br/categoria/Im%C3%B3veis", "https://www.saraivaleiloes.com.br/categoria/Apartamentos", "https://www.saraivaleiloes.com.br/categoria/Comercial"]
     cards = []
 
     for url in urls:
@@ -3576,7 +3449,7 @@ def kleiloes():
     return data
 
 def kcleiloes():
-    urls = ["https://www.kcleiloes.com.br/lotes/imovel&page=", "https://www.kcleiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://www.kcleiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://www.kcleiloes.com.br/lotes/imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -3691,7 +3564,7 @@ def kcleiloes():
     return data
 
 def patiorochaleiloes():
-    urls = ["https://www.patiorochaleiloes.com.br/lotes/imovel?tipo=imovel&page=", "https://www.patiorochaleiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://www.patiorochaleiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://www.patiorochaleiloes.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -3806,7 +3679,7 @@ def patiorochaleiloes():
     return data
 
 def ccjleiloes():
-    urls = ["https://ccjleiloes.com.br/lotes/imovel&page=", "https://ccjleiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://ccjleiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://ccjleiloes.com.br/lotes/imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -3921,7 +3794,7 @@ def ccjleiloes():
     return data
 
 def faleiloes():
-    urls = ["https://faleiloes.com.br/lotes/imovel?tipo=imovel&page=", "https://faleiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://faleiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://faleiloes.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -4036,7 +3909,7 @@ def faleiloes():
     return data
 
 def leilaopernambuco():
-    urls = ["https://www.leilaopernambuco.com.br/lotes/imovel?tipo=imovel&page=", "https://www.leilaopernambuco.com.br/lotes/veiculo?tipo=veiculo&page=", "https://www.leilaopernambuco.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://www.leilaopernambuco.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -4153,7 +4026,7 @@ def leilaopernambuco():
 def nsleiloes():
     cards = []
     
-    urls = ["https://www.nsleiloes.lel.br/leilao/lotes/animais", "https://www.nsleiloes.lel.br/leilao/lotes/diversos", "https://www.nsleiloes.lel.br/leilao/lotes/eletronicos", "https://www.nsleiloes.lel.br/leilao/lotes/equipamentos", "https://www.nsleiloes.lel.br/leilao/lotes/imoveis", "https://www.nsleiloes.lel.br/leilao/lotes/maquinas", "https://www.nsleiloes.lel.br/leilao/lotes/sucatas", "https://www.nsleiloes.lel.br/leilao/lotes/veiculos", "https://www.nsleiloes.lel.br/venda-direta"]
+    urls = ["https://www.nsleiloes.lel.br/leilao/lotes/imoveis"]
     for url in urls:
         try:
             soup = get_requests(url)
@@ -4211,6 +4084,8 @@ def nasarleiloes():
         tipo = url.find("div", class_="bid-lotes").find("p").get_text()
         tipo = int(''.join(filter(str.isdigit, tipo)))
         name = url.find("div", class_="bid-details").find("p", class_="bid-description").text.lstrip().rstrip()
+        if "motocicleta" in name.lower() or "honda" in name.lower():
+            continue
         url = url.find("div", class_="bid-link").find("a").get("href")
         if "https://www.nasarleiloes" not in url:
             url = f"https://www.nasarleiloes.com.br{url}"
@@ -4381,6 +4256,8 @@ def montenegroleiloes():
         link = f"https://www.montenegroleiloes.com.br{card.find("div", class_="image").find("a").get("href")}"
         img_cover = card.find("div", class_="image").find("a").find("img").get("src")
         name = card.find("div", class_="infos").find("h3").text.lstrip().rstrip()
+        if "chevrolet" in name.lower() or "fiat" in name.lower() or "citroen" in name.lower() or "honda" in name.lower() or "suzuki" in name.lower() or "ford" in name.lower() or "nissan" in name.lower() or "hyundai""vw" in name.lower() or "guerra" in name.lower() or "randon" in name.lower() or "kia" in name.lower() or "renault" in name.lower() or "peugeot" in name.lower() or "mercedes" in name.lower() or "jeep" in name.lower() or "toyota" in name.lower() or "maquina" in name.lower() or "máquina" in name.lower() or "notebook" in name.lower() or "cadeira" in name.lower() or "carrinho" in name.lower() or "forno" in name.lower() or "rack" in name.lower() or "refresqueira" in name.lower() or "estante" in name.lower() or "mesa" in name.lower() or "lava" in name.lower() or "cafeteira" in name.lower() or "expositora" in name.lower() or "gerador" in name.lower() or "peças" in name.lower() or "empilhadeira" in name.lower() or "gm" in name.lower() or "kasinski" in name.lower() or "aeronave" in name.lower():
+            continue
         value = float(card.find("div", class_="control").find("span", class_="valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
         soup = get_requests(link)
@@ -4418,7 +4295,7 @@ def montenegroleiloes():
     return data
 
 def agostinholeiloes():
-    urls = ["https://www.agostinholeiloes.com.br/lotes/imovel?tipo=imovel&page=", "https://www.agostinholeiloes.com.br/lotes/veiculo?tipo=veiculo&page=", "https://www.agostinholeiloes.com.br/lotes/diversos?tipo=diversos&page="]
+    urls = ["https://www.agostinholeiloes.com.br/lotes/imovel?tipo=imovel&page="]
     data = []
     cards = []
     for url in urls:
@@ -4533,7 +4410,7 @@ def agostinholeiloes():
     return data
 
 def eleiloero():
-    urls = ["https://www.e-leiloeiro.com.br/busca?tipo=im%C3%B3veis", "https://www.e-leiloeiro.com.br/busca?tipo=m%C3%A1quinas%20&%20equipamentos%20industriais", "https://www.e-leiloeiro.com.br/busca?tipo=bens%20diversos", "https://www.e-leiloeiro.com.br/busca?tipo=ve%C3%ADculos", "https://www.e-leiloeiro.com.br/busca?tipo=agro", ]
+    urls = ["https://www.e-leiloeiro.com.br/busca?tipo=im%C3%B3veis", "https://www.e-leiloeiro.com.br/busca?tipo=agro", ]
     
     cards = []
     for url in urls:
