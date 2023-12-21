@@ -11,13 +11,50 @@ from pyvirtualdisplay import Display
 import time
 import json
 import credenciais
+import mysql.connector
+from mysql.connector import Error
+
+def conectar_mysql(host, database, user, password):
+    try:
+        connection = mysql.connector.connect(host=host,
+                                             database=database,
+                                             user=user,
+                                             password=password)
+        if connection.is_connected():
+            return connection
+    except Error as e:
+        print("Erro ao conectar ao MySQL", e)
 
 def update_db (data, site):
-    pass
+    quit()
+    connection = conectar_mysql("host", "database", "user", "password")
+    
+    if connection.is_connected():
+        cursor = connection.cursor()
+
+        # Exclui todos os registros existentes para o site especificado
+        query_delete = "DELETE FROM sua_tabela WHERE Site = %s"
+        cursor.execute(query_delete, (data['Site'],))
+        connection.commit()
+
+        # Insere um novo registro
+        query_insert = """
+            INSERT INTO sua_tabela (Site, Nome, Endereço, `Área Útil`, `Área Total`, Valor, `Valor da Avaliação`, `Link oferta`, `Link imagem da capa`)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        valores = (data['Site'], data['Nome'], data['Endereço'], data['Área Útil'], data['Área Total'], 
+                   data['Valor'], data['Valor da Avaliação'], data['Link oferta'], data['Link imagem da capa'])
+        cursor.execute(query_insert, valores)
+
+        connection.commit()
+        cursor.close()
+        connection.close()
+    else:
+        print("Não foi possível conectar ao banco de dados")
 
 def get_areas (texto):
-    with open("text_ia.txt", 'a') as file:
-        file.write(f"'{texto}'," + '\n')
+    with open("text_ia.txt", 'a', encoding='utf-8') as file:
+        file.write(f"'{texto}', " + '\n')
     data=[0, 0]
     return data
 
@@ -412,6 +449,9 @@ def francoleiloes():
         divs_value = soup.find("div", "col-lg-6 col-md-6 col-sm-12 col-xs-12 infoDir").find_all("span", class_="margin-top-2 weight-normal")
         for div in divs_value:
             text_div = div.find("strong")
+            value0 = None
+            value1 = None
+            value2 = None
             try:
                 value0 = text_div.get_text() if text_div else None
                 value0 = float(value0.split("$")[1].replace('.', '').replace(',', '.'))
@@ -709,57 +749,60 @@ def lessaleiloes():
         infos = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-12g27go").find_all("span", class_="jss173").text
         for info in infos:
             if "R$" in info:
-                print(info)
+                pass
         texts = soup.find("div", class_="jss172").get_text().split("\n")
         for text in texts:
             if "avaliação:" in text.lower() or "atualizada:" in text.lower():
                 appraisal_value = float(text.split("$").split("(").lstrip().rstrip().replace('.', '').replace(',', '.'))
             elif "segundo leilão" in text:
                 value2 = float(text.split("$").split("(").lstrip().rstrip().replace('.', '').replace(',', '.'))
-        print(appraisal_value)
-        print(value2)
         break
 
 def rymerleiloes():
     soup = get_requests("https://www.rymerleiloes.com.br/")
-    cards = soup.find("div", class_="lista_leiloes").find_all("li")
+    cards = soup.find("div", class_="cont-leiloes").find_all("article")
 
     data = []
     for card in cards:
-        img_cover = card.find("div", class_="box-img").find("div", class_="box-capa").find("img").get("src")
-        link = card.find("div", class_="box-vara").find("a").get("href")
-        name = card.find("div", class_="box-vara").find("a").text
-        if "veículo" in name.lower() or "carro" in name.lower() or "móveis" in name.lower():
+        img_cover = card.find("a").find("img").get("src")
+        link = f"https://www.rymerleiloes.com.br{card.find('a').get('href')}"
+        name = card.find("div", class_="cont-infos").find("h3").text.lstrip().rstrip()
+        if "eletrica" in name.lower() or "veículo" in name.lower() or "carro" in name.lower() or "móveis" in name.lower():
             continue
-        address = card.find("section").find("div", class_="wrapp-infos-leilao").find("div", class_="col-lista-descricao").find("div", class_="descricao").find("a").text
-        value1 = float(card.find("section").find("div", class_="box-info-leilao").find_all("div", class_="linha linha-praca-1 active")[1].find("span").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-        
-        value2 = None
-        try:
-            value2 = float(card.find("section").find("div", class_="box-info-leilao").find_all("div", class_="linha linha-praca-1 {M:CLASS_IS_ATIVO_2}")[1].find("span").text.split("$").lstrip().rstrip().replace('.', '').replace(',', '.'))
-        except:  # noqa: E722
-            value2 = None
+        address = card.find("div", class_="cont-infos").find("p").text
 
-        if value1 and value2 is not None:
-            value = min(value1, value2)
-        
-        elif value1 is not None:
-            value = value1
+        values = []
+        values_p = card.find("div", class_="f-leilao").find("ul").find_all("p")
+        for p in values_p:
+            p = p.text
+            if "Lance inicial:" in p:
+                values.append(float(p.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
 
-        elif value2 is not None:
-            value = value2
+        if len(values)>0 and values is not None:
+            value = min(values)
 
         else:
             value = None
-
+        
         soup = get_requests(link)
-
-        appraisal_value = float(soup.find("div", "col-info-lote-2").find("div", "linha-info").text.split("$")[1].lstrip().rsplit()[0].replace('.', '').replace(',', '.'))
-
         area_util = None
         area_total = None
+        d = []
+        descricao = ""
 
-        descricao = soup.find("div", class_="wrapp-detalhes-leilao").text
+        descs = card.find_all("div", style="text-align: justify;")
+        for desc in descs:
+            d.append(desc.text)
+
+        descricao = "; ".join(d)
+
+        soup1 = None
+        try:
+            soup1 = get_selenium(soup.find("a", class_="btn btn-sm btn-light btn-detalhes").get("href"))
+        except:  # noqa: E722
+            soup1 = get_selenium(f"https://www.rymerleiloes.com.br{soup.find('a', class_='btn btn-sm btn-light btn-detalhes').get('href')}")
+
+        appraisal_value = float(soup1.find("div", "avaliacao").text.split("$")[1].lstrip().rsplit()[0].replace('.', '').replace(',', '.'))
 
         areas = get_areas(descricao)
 
@@ -793,17 +836,19 @@ def grupolance():
             cards.append(card_get)
 
     for card in cards:
-        img_cover = card.find("a", class_="card-image lazyload d-block").get("data-bg")
+        img_cover = card.find("a", class_="card-image d-block").get("style")
         img_cover = f"https:{img_cover}"
-        link = card.find("a", class_="card-image lazyload d-block").get("href")
+        link = card.find("a", class_="card-image d-block").get("href")
         name = card.find("a", class_="card-title").text
+        values = []
         values_div = card.find_all("div", class_="card-date-row")
-        if len(values_div)>1:
-            value1 = float(values_div[0].find("ol").find("li", class_="fs-px-12").text.split()[1].replace('.', '').replace(',', '.'))
-            value2 = float(values_div[1].find("ol").find("li", class_="fs-px-12").text.split()[1].replace('.', '').replace(',', '.'))
-            value = min(value1, value2)
+        for div in values_div:
+            values.append(float(div.find("ol").find("li", class_="fs-px-12").text.split("$")[1].replace('.', '').replace(',', '.')))
+
+        if len(values) > 0 and values is not None:
+            value = min(values)
         else:
-            value = float(values_div.find("ol").find("li", class_="fs-px-12").text.split()[1].replace('.', '').replace(',', '.'))
+            value = None
 
         soup = get_requests(link)
         
@@ -878,7 +923,7 @@ def megaleiloes():
 
     data = []
     for card in cards:
-        link = card.find("div", class_="card open").find("a", class_="card-image lazyload").get("href")
+        link = card.find("a", class_="card-image lazyload").get("href")
         img_cover = card.find("a", class_="card-image lazyload").get("data-bg")
         name = card.find("div", class_="card-content").find("div", class_="wrap").find("a", class_="card-title").text.lstrip().rstrip()
         
@@ -990,7 +1035,11 @@ def vivaleiloes():
 
         card = get_requests(link)
         
-        address = card.find("section", class_="dg-lote-box dg-lote-local").find("div", class_="dg-lote-local-endereco").text.lstrip().rstrip()
+        address = None
+        try:
+            address = card.find("div", class_="dg-lote-local-endereco").text.lstrip().rstrip()
+        except:  # noqa: E722
+            pass
 
         area_util = None
         area_total = None
@@ -1093,7 +1142,7 @@ def sanchesleiloes():
 
         address = soup.find("div", class_="col-12 col-sm-8 col-md-9 my-1 mt-md-4 mt-xl-2").find_all("div", class_="col-12")[-1].text.split(":")[1].lstrip().rstrip()
 
-        appraisal_value = float(soup.find("div", class_="col-12 col-md-10 col-lg-6 mb-3 pl-lg-5").find("p", class_="mb-0 destaque").text.split(":")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        appraisal_value = float(soup.find("div", class_="col-12 col-md-10 col-lg-6 mb-3 pl-lg-5").find("p", class_="mb-0 destaque").text.split(":")[1].split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
         try:
             descricao = soup.find("div", class_="col-8 py-3").find("p").find("p").text
@@ -1203,7 +1252,11 @@ def lancecertoleiloes():
         img_cover = card.find("img", class_="lote-img").get("src")
         
         soup = get_requests(link)
-        value = float(soup.find("span", id="ContentPlaceHolder1_lblLanceinicial").text.split()[0].replace('.', '').replace(',', '.'))
+        value = None
+        try:
+            value = float(soup.find("span", id="ContentPlaceHolder1_lblLanceinicial").text.replace('.', '').replace(',', '.'))
+        except:  # noqa: E722
+            continue
         appraisal_value = None
         try:
             appraisal_value = float(soup.find("span", id="ContentPlaceHolder1_lblAvaliacao").text.replace('.', '').replace(',', '.'))
@@ -1447,18 +1500,36 @@ def oleiloes():
         img_cover = card.find("div", class_="relative h-52 overflow-hidden rounded-t-md").find("img").get("src")
 
         soup = get_requests(link)
-        appraisal_value = float(soup.find("tbody").find_all("tr", class_="odd:bg-white even:bg-zinc-50 dark:text-zinc-300 dark:odd:bg-zinc-700 dark:even:bg-zinc-800")[2].find("td", class_="py-3 px-4").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        appraisal_value = None
+        try:
+            appraisal_value = float(soup.find("tbody").find_all("tr", class_="odd:bg-white even:bg-zinc-50 dark:text-zinc-300 dark:odd:bg-zinc-700 dark:even:bg-zinc-800")[2].find("td", class_="py-3 px-4").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        except:  # noqa: E722
+            pass
 
-        infos = soup.find("tbody").find_all("tr", class_="odd:bg-white even:bg-zinc-50 dark:text-zinc-300 dark:odd:bg-zinc-700 dark:even:bg-zinc-800")[3].find("td", class_="py-3 px-4").find_all("span")
-        if len(infos) > 1:
-            value1 = float(infos[0].text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-            value2 = float(infos[2].text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-            value = min(value1, value2)
+        values = []
+        values_spans = card.find("div", class_="flex-1 text-center").find_all("span")
+        for span in values_spans:
+            try:
+                span = span.text
+            except:  # noqa: E722
+                continue
+            if "LEILÃO:" in span or "valor de:" in span:
+                try:
+                    values.append(float(span.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
+                except:  # noqa: E722
+                    pass
+        if values is not None and len(values) > 0:
+            value = min(values)
 
-        elif len(infos) == 1:
-            value = float(infos[0].text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-
-        descricao = soup.find("div", class_="py-2 px-1 text-zinc-700 dark:bg-transparent dark:text-zinc-300").find("div", style="text-align: justify;").text
+        info = soup.find("div", class_="py-2 px-1 text-zinc-700 dark:bg-transparent dark:text-zinc-300")
+        partes = []
+        try:
+            for child in info.descendants:
+                partes.append(child.text)
+            descricao = " ".join(partes)
+        except:  # noqa: E722
+            pass
+        
         areas = get_areas(descricao)
 
         area_util = areas[0]
@@ -1478,7 +1549,7 @@ def oleiloes():
     return data
 
 def stefanellileiloes():
-    soup = get_requests("https://wsww.stefanellileiloes.com.br/#")
+    soup = get_requests("https://www.stefanellileiloes.com.br/#")
     cards = soup.find_all("article", class_="col-md-3 col-sm-6")
 
     data = []
@@ -1568,6 +1639,10 @@ def globoleiloes():
     data = []
     for card in cards:
         link = card.find("div", class_="box no-padding").find("a").get("href")
+        if "https://" not in link:
+            link = f"https://www.globoleiloes.com.br{link}"
+        if "mercado.bomvalor" not in link and "globoleiloes" not in link:
+            continue
         inf_img = card.find("div", class_="box no-padding").find("a").find("div", class_="bg-img").get("style").split("(")
         for inf in inf_img:
             if "http" in inf:
@@ -1724,7 +1799,10 @@ def krobelleiloes():
             x = x.text
             if "$" in x:
                 values_list.append(float(x.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
-        value = min(values_list)
+        if values_list is not None and len(values_list)>0:
+            value = min(values_list)
+        else:
+            value = None
 
         descricao = soup.find("p", style="margin-top: 15px; text-align: justify; margin-bottom: 20px;").text.replace("\n\xa0\n", " ")
         if "rua" in descricao.lower():
@@ -1736,11 +1814,14 @@ def krobelleiloes():
         area_util = areas[0]
         area_total = areas[1]
 
+        appraisal_value = None
         try:
             appraisal_value = float(soup.find("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;").find_all("div", style="flex-direction: column; box-sizing: border-box; display: flex;")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         except:  # noqa: E722
-            appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-
+            try:
+                appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            except:  # noqa: E722
+                pass
         data_unit = {"Site": "KrobelLeiloes",
                     "Nome": name,
                     "Endereço": address,
@@ -1773,7 +1854,10 @@ def mazzollileiloes():
             x = x.text
             if "$" in x:
                 values_list.append(float(x.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
-        value = min(values_list)
+        if values_list is not None and len(values_list) >0:
+            value = min(values_list)
+        else:
+            value = None
 
         descricao = soup.find("p", style="margin-top: 15px; text-align: justify; margin-bottom: 20px;").text.replace("\n\xa0\n", " ")
         if "rua" in descricao.lower():
@@ -1784,11 +1868,14 @@ def mazzollileiloes():
         areas = get_areas(descricao)
         area_util = areas[0]
         area_total = areas[1]
-
+        appraisal_value = None
         try:
             appraisal_value = float(soup.find("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;").find_all("div", style="flex-direction: column; box-sizing: border-box; display: flex;")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         except:  # noqa: E722
-            appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            try:
+                appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            except:  # noqa: E722
+                pass
 
         data_unit = {"Site": "MazzolliLeiloes",
                     "Nome": name,
@@ -1822,7 +1909,10 @@ def oesteleiloes():
             x = x.text
             if "$" in x:
                 values_list.append(float(x.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
-        value = min(values_list)
+        if values_list is not None and len(values_list)>0:
+            value = min(values_list)
+        else:
+            value = None
 
         descricao = soup.find("p", style="margin-top: 15px; text-align: justify; margin-bottom: 20px;").text.replace("\n\xa0\n", " ")
         if "rua" in descricao.lower():
@@ -1834,10 +1924,14 @@ def oesteleiloes():
         area_util = areas[0]
         area_total = areas[1]
 
+        appraisal_value = None
         try:
             appraisal_value = float(soup.find("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;").find_all("div", style="flex-direction: column; box-sizing: border-box; display: flex;")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         except:  # noqa: E722
-            appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            try:
+                appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            except:  # noqa: E722
+                pass
 
         data_unit = {"Site": "OesteLeiloes",
                     "Nome": name,
@@ -1961,7 +2055,7 @@ def rochaleiloes():
         link = card.find("div", class_="relative").find("a").get("href")
         img_cover = card.find("div", class_="relative").find("a").find("img").get("src")
         address = card.find("div", class_="px-4 uppercase text-center font-bold text-site-box-cidade dark:text-site-box-cidade-dark py-2 text-[1.25rem]").find("span").text.lstrip().rstrip()
-        name = card.find("a", class_="font-bold text-site-box-titulo dark:text-site-box-titulo-dark")
+        name = card.find("a", class_="font-bold text-site-box-titulo dark:text-site-box-titulo-dark").text
         if "vw""sucata" in name.lower() or "ford" in name.lower() or "honda" in name.lower() or "ford" in name.lower() or "furadeira" in name.lower() or "fiat" in name.lower() or "audi" in name.lower() or "gol" in name.lower() or "benz" in name.lower():
             continue
 
@@ -1981,6 +2075,7 @@ def rochaleiloes():
             value = None
 
         soup = get_requests(link)
+        appraisal_value = None
         infos = soup.find_all("tr", class_="odd:bg-white even:bg-zinc-50 dark:text-zinc-300 dark:odd:bg-zinc-700 dark:even:bg-zinc-800")
         for info in infos:
             info = info.text
@@ -2430,10 +2525,14 @@ def damianileiloes():
         area_util = areas[0]
         area_total = areas[1]
 
+        appraisal_value = None
         try:
             appraisal_value = float(soup.find("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;").find_all("div", style="flex-direction: column; box-sizing: border-box; display: flex;")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         except:  # noqa: E722
-            appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            try:
+                appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            except:  # noqa: E722
+                pass
 
         data_unit = {"Site": "DamianiLeiloes",
                     "Nome": name,
@@ -2804,9 +2903,13 @@ def renovarleiloes():
     
     data = []
     for card in cards:
+        os.system("cls")
         link = f"https://www.renovarleiloes.com.br{card.find('div', class_='back').find('div', class_='card-footer').find('a').get('href')}"
-        img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
-        
+        img_cover = None
+        try:
+            img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
+        except:  # noqa: E722
+            img_cover = card.find("div", class_="front").find("img").get("src")
         soup = get_requests(link)
         name = soup.find("h4", class_="card-title").text.replace("\n", "").lstrip().rstrip()
         value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
@@ -2936,12 +3039,12 @@ def portalzuk():
     soup = BeautifulSoup(html_content, "html.parser")
     
     cards = soup.find("div", class_="list-items").find_all("div", class_="card-property card_lotes_div")
-    print(len(cards))
+
     data = []
     for card in cards:
         link = card.find("div", class_="card-property-image-wrapper").find("a").get("href")
         img_cover = card.find("div", class_="card-property-image-wrapper").find("a").find("img").get("src")
-        value = float(card.find("span", class_="card-property-price-value").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        value = float(card.find("span", class_="card-property-price-value").text.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
         soup = get_selenium(link)
         name = soup.find("div", class_="content").find("h1", class_="title").text.lstrip().rstrip()
@@ -3036,67 +3139,77 @@ def superbid():
 
     data = []
     for card in cards:
-        link = f"https://www.superbid.net{card.find('div', class_='react-swipeable-view-container').find('a').get('href')}"
-        img_cover = card.find("div", class_="react-swipeable-view-container").find("a").find("img").get("src")
-        
-        soup = get_selenium(link)
-        os.system("cls")
-        print(card)
-        name = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 jss170 css-h8rdph").find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 css-11bs1r6").find("h1").text.lstrip().rstrip()
-        address = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 jss170 css-h8rdph").find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 css-11bs1r6").find("h2").text.replace("Localização", " ").lstrip().rstrip()
-        value = None
         try:
-            infos = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-12g27go").find_all("div", class_="jss173")
-            for info in infos:
-                info = info.text
-                if "Valor inicial" in info:
-                    value = info
+            link = f"https://www.superbid.net{card.find('div', class_='react-swipeable-view-container').find('a').get('href')}"
+            img_cover = card.find("div", class_="react-swipeable-view-container").find("a").find("img").get("src")
+            
+            soup = get_selenium(link)
+
+            name = None
+            try:
+                name = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 jss170 css-h8rdph").find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 css-11bs1r6").find("h1").text.lstrip().rstrip()
+            except:  # noqa: E722
+                try:
+                    name = soup.find("h1", class_="MuiTypography-root MuiTypography-h1 jss281 jss184 css-1yomz3x").text.lstrip().rstrip()
+                except:  # noqa: E722
+                    continue
+
+            address = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 jss170 css-h8rdph").find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 css-11bs1r6").find("h2").text.replace("Localização", " ").lstrip().rstrip()
+            value = None
+            try:
+                infos = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-direction-xs-column css-12g27go").find_all("div", class_="jss173")
+                for info in infos:
+                    info = info.text
+                    if "Valor inicial" in info:
+                        value = info
+            except:  # noqa: E722
+                pass
+        
+            if value is None or value == 0:
+                try:
+                    value = soup.find("div", class_="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-ay1ysm").find("p", class_="MuiTypography-root MuiTypography-body1 css-z355qp").text
+                except:  # noqa: E722
+                    pass
+            if value is None or value == 0:
+                try:
+                    value = card.find("p", class_="MuiTypography-root MuiTypography-body1 jss313 css-z355qp").text
+                except:  # noqa: E722
+                    pass
+
+            if value is not None:
+                if "R$" in value:
+                    value = float(value.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+                elif "U$" in value:
+                    value = float(value.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+                    response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
+                    if response.status_code != 200:
+                        return None
+                    value_dolar = response.json()["rates"]["BRL"]
+                    if value_dolar is None:
+                        value = value*5.1
+                    else:
+                        value = value * value_dolar
+                    
+            descricao = soup.find("div", class_="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-12 MuiGrid-grid-lg-12 css-1ojex0").find("div", class_="jss172").text
+            areas = get_areas(descricao)
+            area_util = areas[0]
+            area_total = areas[1]
+
+            appraisal_value = None # Site não tem o campo
+
+            data_unit = {"Site": "SuperBid",
+                        "Nome": name,
+                        "Endereço": address,
+                        "Área Útil": area_util,
+                        "Área Total": area_total,
+                        "Valor": value,
+                        "Valor da Avaliação": appraisal_value,
+                        "Link oferta": link,
+                        "Link imagem da capa": img_cover
+                        }
+            data.append(data_unit)
         except:  # noqa: E722
-            pass
-    
-        if value is None or value == 0:
-            try:
-                value = soup.find("div", class_="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 css-ay1ysm").find("p", class_="MuiTypography-root MuiTypography-body1 css-z355qp").text
-            except:  # noqa: E722
-                pass
-        if value is None or value == 0:
-            try:
-                value = card.find("p", class_="MuiTypography-root MuiTypography-body1 jss313 css-z355qp").text
-            except:  # noqa: E722
-                pass
-
-        if value is not None:
-            if "R$" in value:
-                value = float(value.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-            elif "U$" in value:
-                value = float(value.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-                response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
-                if response.status_code != 200:
-                    return None
-                value_dolar = response.json()["rates"]["BRL"]
-                if value_dolar is None:
-                    value = value*5.1
-                else:
-                    value = value * value_dolar
-                
-        descricao = soup.find("div", class_="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-12 MuiGrid-grid-lg-12 css-1ojex0").find("div", class_="jss172").text
-        areas = get_areas(descricao)
-        area_util = areas[0]
-        area_total = areas[1]
-
-        appraisal_value = None # Site não tem o campo
-
-        data_unit = {"Site": "SuperBid",
-                    "Nome": name,
-                    "Endereço": address,
-                    "Área Útil": area_util,
-                    "Área Total": area_total,
-                    "Valor": value,
-                    "Valor da Avaliação": appraisal_value,
-                    "Link oferta": link,
-                    "Link imagem da capa": img_cover
-                    }
-        data.append(data_unit)
+            continue
     return data
 
 def tonialleiloes():
@@ -3343,7 +3456,7 @@ def saraivaleiloes():
     data = []
     for card in cards:
         link = f"https://www.saraivaleiloes.com.br{card.find('a', class_='lote-image').get('href')}"
-        print(link)
+
         imgs = card.find("a", class_="lote-image").find("div", class_="image").get("style").split(";")
         for img in imgs:
             if "http" in img:
@@ -3401,9 +3514,7 @@ def kleiloes():
 
     data = []
     for card in cards:
-        print(card)
         link = card.find("td", class_="NumLoteSublote")
-        print(link)
         name = card.find("td", class_="DescLote").find("a").text.lstrip().rstrip()
 
         values = []
@@ -3445,8 +3556,6 @@ def kleiloes():
                         "Link imagem da capa": img_cover
                         }
         data.append(data_unit)
-        print(data_unit)
-        break
     return data
 
 def kcleiloes():
@@ -4243,7 +4352,10 @@ def montenegroleiloes():
     soup = get_requests("https://www.montenegroleiloes.com.br/")
     urls_page = soup.find_all("div", class_="col-md-4 col-sm-6 col-xs-6 wrap-item")
     for url in urls_page:
-        urls.append(url.find("div", class_="image").find("a").get("href"))
+        try:
+            urls.append(url.find("div", class_="image").find("a").get("href"))
+        except:  # noqa: E722
+            pass
 
     cards = []
     for url in urls:
@@ -4423,13 +4535,12 @@ def eleiloero():
     data = []
     for card in cards:
         os.system("cls")
-        print(card)
         link = f"https://www.e-leiloeiro.com.br{card.find('a', class_='column-11-copy w-col w-col-3 lote-thumb').get('href')}"
         imgs = card.find("a", class_="column-11-copy w-col w-col-3 lote-thumb").get("style").split(";")
         for img in imgs:
             if "http" in img:
                 img_cover = img.split("&")[0]
-
+        
         name = card.find("h5", class_="heading-5-copy").text.lstrip().rstrip()
         appraisal_value  = None
         try:
@@ -4525,69 +4636,64 @@ def eleiloero():
 if __name__ == "__main__":
     #controle
     os.system("cls")
-    #mullerleiloes() 1
-    #lancese() 2
-    #francoleiloes() 3
-    #leilaosantos() 4
-    #leiloeirobonatto() 5
+    #mullerleiloes()
+    #lancese()
+    #francoleiloes()
+    #leilaosantos()
+    #leiloeirobonatto()
     #lessaleiloes() - VER - não tem leilao e nem categoria
-    #rymerleiloes() 6
-    #grupolance() 7
-    #megaleiloes() 8
-    #vivaleiloes() 9
-    #biasileiloes() 10
-    #sanchesleiloes() 11
-    #grandesleiloes() 12
-    #lancecertoleiloes() 13
-    #hastapublica() 14
-    #leiloes123() 15
-    #moraesleiloes() 16
-    #oleiloes() 17
-    #stefanellileiloes() 18
-    #globoleiloes() 19
-    #veronicaleiloes() 20
-    #delltaleiloes() 21
-    #krobelleiloes() 22
-    #mazzollileiloes() 23
-    #oesteleiloes() 24
-    #nordesteleiloes() 25
-    #portellaleiloes() 26
-    #rochaleiloes() 27
-    #centraljudicial() 28
-    #simonleiloes() 29
-    #nogarileiloes() 30
-    #trileiloes() 31
-    #alfaleiloes() 32
-    #wspleiloes() 33
-    #fidalgoleiloes() 34
-    #damianileiloes() 35
-    #joaoemilio() 36
-    #cravoleiloes() 37
-    #topleiloes() 38
-    #valerioiaminleiloes() 39
-    #renovarleiloes() 40
-    #agenciadeleiloes() 41
-    #portalzuk() 42
-    #superbid() 43
-    #tonialleiloes() 44
-    #pimentelleiloes() 45
-    #leilaobrasil() 46
-    #saraivaleiloes() 47
+    #rymerleiloes()
+    #grupolance()
+    #megaleiloes()
+    #vivaleiloes()
+    #biasileiloes()
+    #sanchesleiloes()
+    #grandesleiloes()
+    #lancecertoleiloes()
+    #hastapublica()
+    #leiloes123()
+    #moraesleiloes()
+    #oleiloes()
+    stefanellileiloes() #- erro grande
+    #globoleiloes()
+    #veronicaleiloes()
+    #delltaleiloes()
+    #krobelleiloes()
+    #mazzollileiloes()
+    #oesteleiloes()
+    #nordesteleiloes()
+    #portellaleiloes()
+    #rochaleiloes()
+    #centraljudicial()
+    #simonleiloes()
+    #nogarileiloes()
+    #trileiloes()
+    #alfaleiloes()
+    #wspleiloes()
+    #fidalgoleiloes()
+    #damianileiloes()
+    #joaoemilio()
+    #cravoleiloes()
+    #topleiloes()
+    #valerioiaminleiloes()
+    #renovarleiloes()
+    #agenciadeleiloes()
+    #portalzuk()
+    #superbid()
+    #tonialleiloes()
+    #pimentelleiloes()
+    #leilaobrasil()
+    #saraivaleiloes()
     #kleiloes() - Não funciona
-    #kcleiloes() 48
-    #patiorochaleiloes() 49
-    #ccjleiloes() 50
-    #faleiloes() 51
-    #leilaopernambuco() 52
-    #nsleiloes() 53
-    #nasarleiloes() 54
-    #pecinileiloes() 55
-    #montenegroleiloes() 56
-    #agostinholeiloes() 57
-    #eleiloero() 58
-
-
-
-
-
+    #kcleiloes()
+    #patiorochaleiloes()
+    #ccjleiloes()
+    #faleiloes()
+    #leilaopernambuco()
+    #nsleiloes()
+    #nasarleiloes()
+    #pecinileiloes()
+    #montenegroleiloes()
+    #agostinholeiloes()
+    #eleiloero() # ultimo
 

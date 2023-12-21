@@ -1,4 +1,3 @@
-from doctest import debug
 from flask import Flask
 import os
 import shutil
