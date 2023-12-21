@@ -20,14 +20,10 @@ funcoes_leilao = [
     nsleiloes, nasarleiloes, pecinileiloes, montenegroleiloes, agostinholeiloes, eleiloero
 ]
 
-# Importe suas funções de scraping aqui
-
 # Configura o logging
 logging.basicConfig(filename='meu_log.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s %(threadName)s : %(message)s')
 
-# Lista de funções a serem chamadas
-# Adicione suas funções de leilão aqui
 
 def chamar_funcao_com_delay(funcao, delay):
     time.sleep(delay)
@@ -57,7 +53,7 @@ def main():
         if agora.hour == 1 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 3, 4]:  # Segunda, Quarta, Sexta
             logging.info(f"Pull concluído em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             fazer_git_pull()
-        if agora.hour == 3 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 3, 4]:
+        if agora.hour == 8 and agora.minute == 16 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 3, 4]:
             os.system("clear")
             logging.info(f"Coletando dados em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             executar_leiloes()

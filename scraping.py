@@ -13,6 +13,7 @@ import json
 import credenciais
 import mysql.connector
 from mysql.connector import Error
+from ia2 import get_areas
 
 def conectar_mysql(host, database, user, password):
     try:
@@ -51,13 +52,6 @@ def update_db (data, site):
         connection.close()
     else:
         print("Não foi possível conectar ao banco de dados")
-
-def get_areas (texto):
-    with open("text_ia.txt", 'a', encoding='utf-8') as file:
-        file.write(f"'{texto}', " + '\n')
-    data=[0, 0]
-    return data
-
 
 def get_selenium(url):
     # Configurar o driver do Selenium
