@@ -49,7 +49,7 @@ def executar_leiloes():
         delay += delay_incremento
 
 def fazer_git_pull():
-    subprocess.run(["git", "-C", "/150_webscraping/", "pull"])
+    subprocess.run(["git", "-C", "/home/ubuntu/150_webscraping/", "pull"])
 
 def main():
     while True:
