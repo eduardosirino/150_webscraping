@@ -2,6 +2,7 @@ import os
 import re
 import time
 import json
+import platform
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
@@ -4460,7 +4461,10 @@ def eleiloero():
 
 if __name__ == "__main__":
     #controle
-    os.system("cls")
+    if platform.system() == "Windows":
+        os.system('cls')
+    else:
+        os.system('clear')
     #mullerleiloes()
     #lancese()
     #francoleiloes()
