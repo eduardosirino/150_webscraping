@@ -2815,6 +2815,7 @@ def portalzuk():
     chrome_options = Options()
     chrome_options.add_argument('--no-sandbox')
     chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument('--disable-gpu')
 
     driver = webdriver.Chrome(options=chrome_options)
     driver.set_window_size(1024, 768)
