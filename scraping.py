@@ -4507,7 +4507,7 @@ if __name__ == "__main__":
     #valerioiaminleiloes()
     #renovarleiloes()
     #agenciadeleiloes()
-    #portalzuk()
+    portalzuk()
     #superbid()
     #tonialleiloes()
     #pimentelleiloes()
