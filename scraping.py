@@ -2425,7 +2425,7 @@ def joaoemilio():
             address = None
 
         link = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").get("href")    
-        if link == "https://#" or link =="https://#?":
+        if link == "https://#" or link =="https://#?" or link == "#":
             continue
         soup = get_requests(link)
         
@@ -2808,7 +2808,7 @@ def agenciadeleiloes():
 
 def portalzuk():
     # Iniciar o display virtual
-    display = Display(visible=0, size=(1024, 768))
+    display = Display(visible=0, size=(1024, 768), backend="xvfb", executable_path="/home/ubuntu/.cache/selenium/chrome/linux64/120.0.6099.109/chrome")
     display.start()
 
     chrome_options = Options()
@@ -4503,7 +4503,7 @@ if __name__ == "__main__":
     #valerioiaminleiloes()
     #renovarleiloes()
     #agenciadeleiloes()
-    portalzuk()
+    #portalzuk()
     #superbid()
     #tonialleiloes()
     #pimentelleiloes()
