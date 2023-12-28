@@ -1,9 +1,10 @@
 import os
-import threading
 import time
-from datetime import datetime
-import subprocess
 import logging
+import platform
+import threading
+import subprocess
+from datetime import datetime
 from auxiliar import update_db
 from scraping import mullerleiloes, lancese, francoleiloes, leilaosantos, leiloeirobonatto, rymerleiloes, grupolance, megaleiloes, vivaleiloes, biasileiloes, sanchesleiloes, grandesleiloes, lancecertoleiloes, hastapublica, leiloes123, moraesleiloes, oleiloes, stefanellileiloes, globoleiloes, veronicaleiloes, delltaleiloes, krobelleiloes, mazzollileiloes, oesteleiloes, nordesteleiloes, portellaleiloes, rochaleiloes, centraljudicial, simonleiloes, nogarileiloes, trileiloes, alfaleiloes, wspleiloes, fidalgoleiloes, damianileiloes, joaoemilio, cravoleiloes, topleiloes, valerioiaminleiloes, renovarleiloes, agenciadeleiloes, portalzuk, superbid, tonialleiloes, pimentelleiloes, leilaobrasil, saraivaleiloes, kcleiloes, patiorochaleiloes, ccjleiloes, faleiloes, leilaopernambuco, nsleiloes, nasarleiloes, pecinileiloes, montenegroleiloes, agostinholeiloes, eleiloero
 
@@ -54,8 +55,11 @@ def main():
         if agora.hour == 1 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:  # Segunda, Quarta, Sexta
             logging.info(f"Pull concluído em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             fazer_git_pull()
-        if agora.hour == 8 and agora.minute == 16 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
-            os.system("clear")
+        if agora.hour == 9 and agora.minute == 47 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 3, 4]:
+            if platform.system() == "Windows":
+                os.system('cls')
+            else:
+                os.system('clear')
             logging.info(f"Coletando dados em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             executar_leiloes()
         time.sleep(60)  # Espera 1 minuto antes de verificar novamente

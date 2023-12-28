@@ -2808,9 +2808,12 @@ def agenciadeleiloes():
     return data
 
 def portalzuk():
-    # Iniciar o display virtual
-    display = Display(visible=0, size=(1024, 768), backend="xvfb")
-    display.start()
+    if platform.system() == "Windows":
+        pass
+    else:
+        # Iniciar o display virtual
+        display = Display(visible=0, size=(1024, 768), backend="xvfb")
+        display.start()
 
     chrome_options = Options()
     chrome_options.add_argument('--no-sandbox')
@@ -2869,7 +2872,6 @@ def portalzuk():
     data = []
     for card in cards:
         link = card.find("div", class_="card-property-image-wrapper").find("a").get("href")
-        print(link)
         img_cover = card.find("div", class_="card-property-image-wrapper").find("a").find("img").get("src")
         value = float(card.find("span", class_="card-property-price-value").text.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
@@ -4508,7 +4510,7 @@ if __name__ == "__main__":
     #valerioiaminleiloes()
     #renovarleiloes()
     #agenciadeleiloes()
-    portalzuk()
+    #portalzuk()
     #superbid()
     #tonialleiloes()
     #pimentelleiloes()
