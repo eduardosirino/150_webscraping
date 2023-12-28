@@ -2809,7 +2809,7 @@ def agenciadeleiloes():
 
 def portalzuk():
     # Iniciar o display virtual
-    display = Display(visible=0, size=(1024, 768), backend="xvfb", executable_path="/home/ubuntu/.cache/selenium/chrome/linux64/120.0.6099.109/chrome")
+    display = Display(visible=0, size=(1024, 768), backend="xvfb")
     display.start()
 
     chrome_options = Options()
