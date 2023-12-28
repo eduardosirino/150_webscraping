@@ -1,9 +1,9 @@
 import numpy as np
-import joblib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 
+# Exemplo de dados de treinamento
 data = [
     {"text": 'Imóvel com área útil de 120 m² e área total de 200 m².', 'area_util': 120, 'area_total': 200},
     {'text': 'O APARTAMENTO número 403 do Bloco “4”, lotado pelo número 10 da Rua “2” (atual Rua Francisco Galecki) integrante do Edifício Jardim de Yucatan, com 84,997990 metros quadrados de área real global, sendo 74,155000 metros quadrados de área real privativa e 10,842990 metros quadrados de área real de uso comum', 'area_util': 74.155000, 'area_total': 84.997990},
@@ -496,61 +496,22 @@ data = [
 # Função de pré-processamento
 def preprocess_text(texts):
     vectorizer = TfidfVectorizer()
-    return vectorizer.fit_transform(texts), vectorizer
+    return vectorizer.fit_transform(texts)
 
-# Função para criar e treinar o modelo
-def create_and_train_model(X, Y):
-    model = LinearRegression()
-    model.fit(X, Y)
-    return model
+# Preparação dos dados
+texts = [d["text"] for d in data]
+X = preprocess_text(texts)
+Y = np.array([[d['area_util'], d['area_total']] for d in data])
 
-# Função para carregar o modelo ou treinar um novo se necessário
-def load_or_train_model(data, target):
-    model_file = f'linear_regression_model_{target}.pkl'
-    vectorizer_file = 'vectorizer.pkl'
-    try:
-        # Tenta carregar o modelo e o vetorizador
-        model = joblib.load(model_file)
-        vectorizer = joblib.load(vectorizer_file)
-    except FileNotFoundError:
-        # Se o modelo não estiver disponível, treina e salva um novo
-        filtered_data = [d for d in data if d[target] is not None]
-        texts = [d["text"] for d in filtered_data]
-        X, vectorizer = preprocess_text(texts)
-        Y = np.array([d[target] for d in filtered_data])
-        
-        model = create_and_train_model(X, Y)
+# Construção e Treinamento do Modelo
+model = LinearRegression()
+model.fit(X, Y)
 
-        # Salvar o modelo e o vetorizador
-        joblib.dump(model, model_file)
-        joblib.dump(vectorizer, vectorizer_file)
+# Realizar previsões
+predictions = model.predict(X)
 
-        # Calcular e imprimir métricas de desempenho
-        predictions = model.predict(X)
-        mse = mean_squared_error(Y, predictions)
-        r2 = r2_score(Y, predictions)
-        print(f"{target} - MSE: {mse}, R²: {r2}")
-        
-    return model, vectorizer
-
-# Função para validar e ajustar a previsão
-def validate_prediction(prediction):
-    return None if prediction is None or prediction < 0 else round(float(prediction), 2)
-
-# Função para fazer previsões
-def get_areas(text):
-    model_util, vectorizer_util = load_or_train_model(data, 'area_util')
-    model_total, vectorizer_total = load_or_train_model(data, 'area_total')
-
-    processed_text_util = vectorizer_util.transform([text])
-    processed_text_total = vectorizer_total.transform([text])
-
-    prediction_util = validate_prediction(model_util.predict(processed_text_util)[0])
-    prediction_total = validate_prediction(model_total.predict(processed_text_total)[0])
-
-    return [prediction_util, prediction_total]
-
-# Exemplo de uso
-text = "Apartamento, 70,75 m2 de área total, 60,38 m2 de área privativa, 2 qts, 2 WCs, sl, cozinha, 1 vaga de garagem. IPTU: 160807 Matrícula: 5724 Ofício: 2"
-predicted_areas = get_areas(text)
-print(predicted_areas)
+# Calcular e imprimir métricas de desempenho
+mse = mean_squared_error(Y, predictions)
+r2 = r2_score(Y, predictions)
+print(f"MSE: {mse}")
+print(f"R²: {r2}")

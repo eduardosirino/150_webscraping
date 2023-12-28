@@ -9,14 +9,14 @@ Links para raspar:
 57 - https://www.tjsp.jus.br/auxiliaresjustica/auxiliarjustica/consultapublica - não é site de leilão
 128 - https://www.lancese.com.br/ - Mesmo site do 9
 
+
 64 - https://www.machadoleiloes.com.br/ - Não tem leilão disponível para fazer
 89 - https://www.maxxleiloes.com.br/ - Não tem nenhum leilão ativo no momento para fazer o script
 
-117 - https://www.maxterleiloes.com.br/home -  - Imgens alocadas em assets e não consigo o href da página de cada leilão
+117 - https://www.maxterleiloes.com.br/home -  Imgens alocadas em assets e não consigo o href da página de cada leilão
 109 - https://gestordeleiloes.com.br/home - Imgens alocadas em assets e não consigo o href da página de cada leilão
 10 - https://www.leiloes.com.br/ - Site OFFLINE
-126 - https://www.confiancaleiloes.com.br/
-- mesmos resultados do 122
+126 - https://www.confiancaleiloes.com.br/ - mesmos resultados do 122
 
 
 
