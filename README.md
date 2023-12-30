@@ -1,27 +1,111 @@
 # 150_webscraping
  
-Links para raspar:
+## Comandos:
 
+### Cópia do projeto:
+git clone https://github.com/eduardosirino/150_webscraping.git
+
+### Instalação de dependências:
+sudo apt-get update
+sudo apt-get install xvfb
+sudo apt-get install chromium-chromedriver
+pip install logging
+pip install requests
+pip install bs4
+pip install selenium
+pip install pyvirtualdisplay
+pip install mysql
+pip install mysql-connector-python
+
+### Altera o Horário do servidor:
+sudo timedatectl set-ntp true
+sudo timedatectl set-timezone America/Sao_Paulo
+timedatectl status - para ver se alterou corretamente
+
+### Executar o programa em segundo plano:
+nohup python3 main.py &
+
+### Pode ver se está executando com o:
+ps aux | grep main.py
+
+## Links para raspar:
+
+### Problemas
+
+#### Não será feito Scraping
 1 - https://registradores.onr.org.br/ - não é leiloeiro
 2 - https://www.jusbrasil.com.br/acompanhamentos/processos - não é leiloeiro
 3 - http://www.jorgebrasil.lel.br/ - não é leiloeiro
 24 - https://www.mullerleiloes.com.br/ - mesmo número 4
 57 - https://www.tjsp.jus.br/auxiliaresjustica/auxiliarjustica/consultapublica - não é site de leilão
 128 - https://www.lancese.com.br/ - Mesmo site do 9
+126 - https://www.confiancaleiloes.com.br/ - mesmos resultados do 122
+54 - https://www.d1lance.com.br/ - mesmo do 105
 
 
-64 - https://www.machadoleiloes.com.br/ - Não tem leilão disponível para fazer
-89 - https://www.maxxleiloes.com.br/ - Não tem nenhum leilão ativo no momento para fazer o script
-
+#### Estão com problemas e vou tentar de outras formas
 117 - https://www.maxterleiloes.com.br/home -  Imgens alocadas em assets e não consigo o href da página de cada leilão
 109 - https://gestordeleiloes.com.br/home - Imgens alocadas em assets e não consigo o href da página de cada leilão
 10 - https://www.leiloes.com.br/ - Site OFFLINE
-126 - https://www.confiancaleiloes.com.br/ - mesmos resultados do 122
+16 - https://www.lessaleiloes.com.br/ - não pronto, deu erro (vou tentar com undetected ou selenium base depois)
+83 - https://www.norteleiloes.com.br/ - 403 com requests e erro com selenium
+71 - https://www.wrleiloes.com.br/ - não tem leilão cadastrado para criar o código
 
 
 
 
+### Falta
+6 - https://www.trt12.jus.br/portal/areas/ascom/extranet/destaques/leiloes.jsp
+7 - https://www.kleiloes.com.br/Agenda.aspx
+17 - https://www.scholanteleiloes.com.br/
+18 - https://nortonleiloes.com.br/externo/
+19 - https://leje.com.br/
+22 - https://www.mpleilao.com.br/
+25 - https://www.sold.com.br/
+28 - https://www.centralsuldeleiloes.com.br/
+29 - https://www.santamarialeiloes.com.br/
+30 - https://www.freitasleiloeiro.com.br/
+33 - https://www.leilaovip.com.br/
+35 - https://kriegerleiloes.com.br/
+36 - https://seuimovelbb.com.br/
+37 - https://satoleiloes.com.br/
+searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&orderBy=endDate:asc
+44 - https://hammer.lel.br/
+45 - https://www.caixa.gov.br/voce/habitacao/imoveis-venda/Paginas/default.aspx
+46 - https://www.3torresleiloes.com.br/
+47 - https://www.hastaleiloes.com.br/
+50 - https://www.balbinoleiloes.com.br/externo/
+51 - https://www.kronbergleiloes.com.br/
+52 - https://spencerleiloes.com.br/
+56 - https://www.banrisul.com.br/bob/link/bobw10hn_leiloes_comprar.aspx?secao_id=137
+59 - https://www.santanderimoveis.com.br/
+60 - https://imoveis.bancointer.com.br/
+61 - https://www.deonizialeiloes.com.br/externo/lotes/37947
+62 - https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormCorrecaoValores.do?method=exibirFormCorrecaoValores
+63 - https://www.nakakogueleiloes.com.br/
+66 - https://www.patricialeiloeira.com.br/
+68 - https://www.gpleiloes.com.br//#/
+69 - https://www.baldisseraleiloeiros.com.br/ - n fun
+72 - https://www.hdleiloes.com.br/externo/
+73 - https://www.casaleiloeira.com.br/
+74 - https://www.leiloescentrooeste.com.br/externo/
+75 - https://www.alvaroleiloes.com.br/externo/
+76 - https://www.fabiobarbosaleiloes.com.br/externo/
+77 - https://www.rjleiloes.com.br/
+78 - https://banco.bradesco/html/classic/produtos-servicos/leiloes/index.shtm
+80 - https://www.leilaovip.com.br/home
+81 - https://www.palaciodosleiloes.com.br/
+82 - https://www.leiloesbrasil.com.br/presite
+87 - https://www.vipleiloes.com.br/
+97 - https://www.bspleiloes.com.br/Principal.asp
+98 - https://www.psnleiloes.com.br/
+102 - https://www.leiloesjudiciaisrs.com.br/externo/
+115 - https://www.leiloesjudiciais.com.br/externo/
 
+
+
+
+### Prontos
 4 - http://www.mullerleiloes.com.br/ - PRONTO
 9 - https://lancese.com.br/ - PRONTO
 11 - https://www.francoleiloes.com.br/ - PRONTO
@@ -64,7 +148,7 @@ Links para raspar:
 39 - https://www.renovarleiloes.com.br/ - PRONTO
 41 - https://www.agenciadeleiloes.com.br/ - PRONTO
 40 - https://www.portalzuk.com.br/ - PRONTO
-42 - https://www.superbid.net/ - PRONTO - pegando apenas 10k e tem 70k de itens - precisa revisar
+42 - https://www.superbid.net/ - PRONTO
 49 - https://www.tonialleiloes.com.br/ - PRONTO
 96 - https://www.pimentelleiloes.com.br/ - PRONTO
 100 - https://www.leilaobrasil.com.br/ - PRONTO
@@ -75,84 +159,25 @@ Links para raspar:
 124 - https://faleiloes.com.br/ - PRONTO
 120 - https://www.leilaopernambuco.com.br/ - PRONTO
 112 - https://www.nsleiloes.lel.br/ - PRONTO
-110 - https://www.nasarleiloes.com.br/ - PRONTO - Site ficou off quando fui testar em massa
+110 - https://www.nasarleiloes.com.br/ - PRONTO
 111 - https://www.pecinileiloes.com.br/ - PRONTO
 113 - https://www.montenegroleiloes.com.br/ - PRONTO
 118 - https://www.agostinholeiloes.com.br/
  - PRONTO
  122 - https://www.e-leiloeiro.com.br/ - PRONTO
-
-
-
-
-
-
-16 - https://www.lessaleiloes.com.br/ - não pronto, deu erro (vou tentar com undetected ou selenium base depois)
-103 - https://www.kleiloes.com.br/ - Site não está funcionando, nem com request, nem com selenium
-
-
-
-6 - https://www.trt12.jus.br/portal/areas/ascom/extranet/destaques/leiloes.jsp
-7 - https://www.kleiloes.com.br/Agenda.aspx
-13 - https://peterlongoleiloes.com.br/
-17 - https://www.scholanteleiloes.com.br/
-18 - https://nortonleiloes.com.br/externo/
-19 - https://leje.com.br/
-22 - https://www.mpleilao.com.br/
-23 - https://www.rauppleiloes.com.br/
-25 - https://www.sold.com.br/
-27 - https://www.frazaoleiloes.com.br/
-28 - https://www.centralsuldeleiloes.com.br/
-29 - https://www.santamarialeiloes.com.br/
-30 - https://www.freitasleiloeiro.com.br/
-33 - https://www.leilaovip.com.br/
-35 - https://kriegerleiloes.com.br/
-36 - https://seuimovelbb.com.br/
-37 - https://satoleiloes.com.br/
-searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&orderBy=endDate:asc
-44 - https://hammer.lel.br/
-45 - https://www.caixa.gov.br/voce/habitacao/imoveis-venda/Paginas/default.aspx
-46 - https://www.3torresleiloes.com.br/
-47 - https://www.hastaleiloes.com.br/
-50 - https://www.balbinoleiloes.com.br/externo/
-51 - https://www.kronbergleiloes.com.br/
-52 - https://spencerleiloes.com.br/
-53 - https://www.clicleiloes.com.br/
-54 - https://www.d1lance.com.br/
-56 - https://www.banrisul.com.br/bob/link/bobw10hn_leiloes_comprar.aspx?secao_id=137
-59 - https://www.santanderimoveis.com.br/
-60 - https://imoveis.bancointer.com.br/
-61 - https://www.deonizialeiloes.com.br/externo/lotes/37947
-62 - https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormCorrecaoValores.do?method=exibirFormCorrecaoValores
-63 - https://www.nakakogueleiloes.com.br/
-66 - https://www.patricialeiloeira.com.br/
-68 - https://www.gpleiloes.com.br//#/
-69 - https://www.baldisseraleiloeiros.com.br/ - n fun
-71 - https://www.wrleiloes.com.br/
-72 - https://www.hdleiloes.com.br/externo/
-73 - https://www.casaleiloeira.com.br/
-74 - https://www.leiloescentrooeste.com.br/externo/
-75 - https://www.alvaroleiloes.com.br/externo/
-76 - https://www.fabiobarbosaleiloes.com.br/externo/
-77 - https://www.rjleiloes.com.br/
-78 - https://banco.bradesco/html/classic/produtos-servicos/leiloes/index.shtm
-79 - https://www.milanleiloes.com.br/
-80 - https://www.leilaovip.com.br/home
-81 - https://www.palaciodosleiloes.com.br/
-82 - https://www.leiloesbrasil.com.br/presite
-83 - https://www.norteleiloes.com.br/
-84 - https://www.lbleiloes.com.br/
-87 - https://www.vipleiloes.com.br/
-88 - https://www.hastavip.com.br/
-97 - https://www.bspleiloes.com.br/Principal.asp
-98 - https://www.psnleiloes.com.br/
-102 - https://www.leiloesjudiciaisrs.com.br/externo/
-105 - https://www.d1lance.com.br/proximos_leiloes/1/1/
-
-115 - https://www.leiloesjudiciais.com.br/externo/
-125 - https://sfrazao.com.br/index.php
-129 - https://www.jeleiloes.com.br/
-
+ 64 - https://www.machadoleiloes.com.br/ - PRONTO
+89 - https://www.maxxleiloes.com.br/ - PRONTO
+129 - https://www.jeleiloes.com.br/ - PRONTO
+125 - https://sfrazao.com.br/index.php - PRONTO
+103 - https://www.kleiloes.com.br/ - PRONTO
+105 - https://www.d1lance.com.br/proximos_leiloes/1/1/ - PRONTO
+88 - https://www.hastavip.com.br/ - PRONTO
+27 - https://www.frazaoleiloes.com.br/ - PRONTO
+13 - https://peterlongoleiloes.com.br/ - PRONTO
+84 - https://www.lbleiloes.com.br/ - PRONTO
+79 - https://www.milanleiloes.com.br/ - PRONTO
+23 - https://www.rauppleiloes.com.br/ - PRONTO
+53 - https://www.clicleiloes.com.br/ - PRONTO
 
 
 

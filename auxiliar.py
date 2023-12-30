@@ -24,7 +24,7 @@ def conectar_mysql(host, database, user, password):
         print("Erro ao conectar ao MySQL", e)
 
 
-def update_db (data, site):
+def update_db (data):
     quit()
     connection = conectar_mysql("host", "database", "user", "password")
     

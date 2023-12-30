@@ -33,7 +33,7 @@ def chamar_funcao_com_delay(funcao, delay):
         try:
             data = funcao()
             if len(data) > 0:
-                update_db(data, funcao.__name__)
+                update_db(data)
                 break
         except Exception as e:
             logging.error(f"Erro ao executar {funcao.__name__}: {e}")
@@ -55,7 +55,7 @@ def main():
         if agora.hour == 1 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:  # Segunda, Quarta, Sexta
             logging.info(f"Pull concluído em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             fazer_git_pull()
-        if agora.hour == 9 and agora.minute == 47 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 3, 4]:
+        if agora.hour == 3 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
             if platform.system() == "Windows":
                 os.system('cls')
             else:
