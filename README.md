@@ -6,16 +6,16 @@
 git clone https://github.com/eduardosirino/150_webscraping.git
 
 ### Instalação de dependências:
-sudo apt-get update
-sudo apt-get install xvfb
-sudo apt-get install chromium-chromedriver
-pip install logging
-pip install requests
-pip install bs4
-pip install selenium
-pip install pyvirtualdisplay
-pip install mysql
-pip install mysql-connector-python
+sudo apt-get update  
+sudo apt-get install xvfb  
+sudo apt-get install chromium-chromedriver  
+pip install logging  
+pip install requests  
+pip install bs4  
+pip install selenium  
+pip install pyvirtualdisplay  
+pip install mysql  
+pip install mysql-connector-python  
 
 ### Altera o Horário do servidor:
 sudo timedatectl set-ntp true
