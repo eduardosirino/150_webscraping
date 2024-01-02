@@ -5101,7 +5101,7 @@ def rauppleiloes():
     return data
 
 def pwleiloes():
-    urls = ["https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=55&PaginaIndex=1&QtdPorPagina=99999", "https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=61&PaginaIndex=1&QtdPorPagina=99999"]
+    urls = ["https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=55&PaginaIndex=1&QtdPorPagina=99999", "https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=61&PaginaIndex=1&QtdPorPagina=99999", "https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=58&PaginaIndex=1&QtdPorPagina=99999"]
     cards = []
 
     for url in urls:
@@ -5273,6 +5273,707 @@ def clicleiloes():
         data.append(data_unit)
     return data
 
+def rjleiloes():
+    urls = ["https://www.rjleiloes.com.br/lotes/imovel?tipo=imovel&page="]
+    data = []
+    cards = []
+    for url in urls:
+        soup = get_requests(url)
+        links = []
+        try:
+            bar = soup.find("ul", class_="pagination justify-content-center")
+            lis = bar.find_all("li", class_="page-item")
+            numero_paginas = int(lis[-2].text)
+
+            for x in range(numero_paginas):
+                links.append(f"{url}{x+1}")
+
+            for link in links:
+                page = get_requests(link)
+                cards_page = page.find_all("div", class_="lote")
+                for card in cards_page:
+                    cards.append(card)
+
+        except Exception:
+            cards_page = soup.find_all("div", class_="lote")
+            for card in cards_page:
+                cards.append(card)
+
+    for card in cards:
+        img = card.find("div", class_="col-12 col-lg-2").find("a", class_="rounded").get("style")
+        img = re.search(r"url\('([^']+)'\)", img)
+        img_cover = img.group(1) if img else None
+
+        name = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").find("h5").text
+        
+        info_div = card.find("div", class_="col-12 col-lg-7 text-justify")
+
+        try:
+            address = info_div.find("div").find("div").text.split('\n')
+            for linha in address:
+                if "Cidade:" in linha:
+                    city1 = linha.split("Cidade:")
+
+                    if len(city1) > 1:
+                        city = city1[1].strip()
+                        
+                if "Endereço:" in linha:
+                    address_p = linha.split("Endereço:")
+
+                    if len(address_p) > 1:
+                        address1 = address_p[1].strip().split('   ')[0]
+                        break
+            address = f"{address1}, {city}"
+            
+        except Exception:
+            try:
+                address = info_div.find("div").find("div").text.split('\n')
+                for linha in address:
+                    if "Cidade:" in linha:
+                        city1 = linha.split("Cidade:")
+
+                        if len(city1) > 1:
+                            city = city1[1].strip()
+
+                address = city
+            except Exception:
+                address = None
+
+        link = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").get("href")      
+        if "https://www.rjleiloes" not in link:
+            continue
+        soup = get_requests(link)
+        
+        def extrair_valor(texto):
+            if texto:
+                match = re.search(r'R\$([\d\.]+,\d+)', texto)
+                return match.group(1) if match else None
+            return None
+
+        # Encontrar todos os elementos <h6>
+        h6_elements = soup.find_all('h6', class_="text-center border-top p-2 m-0")
+
+        # Inicializando variáveis
+        appraisal_value = None
+        value1 = None
+        value2 = None
+
+        # Iterar sobre os elementos encontrados
+        for element in h6_elements:
+            if "Valor de Avaliação:" in element.text:
+                appraisal_value = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+            elif "Lance Inicial:" in element.text:
+                if value1 is None:
+                    value1 = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+                else:
+                    value2 = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+
+        if value1 and value2 is not None:
+            value = min(value1, value2)
+        
+        elif value1 is not None:
+            value = value1
+
+        elif value2 is not None:
+            value = value2
+
+        else:
+            value = appraisal_value
+
+        descricao = soup.find("div", class_="mb-3 p-2 border rounded text-justify").find_all("div")[-1].text
+        areas = get_areas(descricao)
+
+        area_util = areas[0]
+        area_total = areas[1]
+
+        data_unit = {"Site": "RJLeiloes",
+                        "Nome": name,
+                        "Endereço": address,
+                        "Área Útil": area_util,
+                        "Área Total": area_total,
+                        "Valor": value,
+                        "Valor da Avaliação": appraisal_value,
+                        "Link oferta": link,
+                        "Link imagem da capa": img_cover
+                        }
+        data.append(data_unit)
+    return data
+
+def fabiobarbosaleiloes():
+    cards = []
+    soup = get_selenium("https://www.fabiobarbosaleiloes.com.br/externo/")
+    urls_cards = soup.find_all("a", class_="l-lnk-carta")
+    for url in urls_cards:
+        situacao = url.find("div", class_="c-status-leilao").get_text()
+        if "ABERTO PARA LANCES" in situacao:
+            name_leilao = url.get("title")
+            if "simulação" not in name_leilao.lower():
+                url = f"https://www.fabiobarbosaleiloes.com.br{url.get("href")}"
+                soup = get_selenium(url)
+                cards_divs = soup.find("div", class_="l-leilao").find_all("div", class_="c-linha")
+                for card in cards_divs:
+                    situacao_lote = card.find("button", class_="c-dados-bem-status").text
+                    if "ABERTO" in situacao_lote:
+                        cards.append(card)
+
+    data = []
+    for card in cards:
+        img_cover = card.find("div", class_="c-foto-bem").find("img").get("src")
+        link = card.find("a").get("href")
+        name = f"{card.find("p", class_="c-descricao-lote").text.lstrip().rstrip()[:50]}..." #site não tem nome, então usei os 50 primeiros caracteres da descrição
+        if "automovel" in name.lower() or "automóvel" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "vw" in name.lower() or "fiat" in name.lower() or "chevrolet" in name.lower() or "volksvagem" in name.lower():
+            continue
+        soup = get_selenium(link)
+
+        infos = soup.find("table", class_="c-detalhes-bem-valores").find("tbody").find_all("tr")
+        appraisal_value = float(infos[1].text.split("$")[1].split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        value = float(infos[2].text.split("$")[1].split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        
+        descricao = soup.find("div", class_="c-detalhes-bem-descricao-lote").text
+        areas = get_areas(descricao)
+
+        area_util = areas[0]
+        area_total = areas[1]
+
+        address = None #Site não traz endereço
+        data_unit = {"Site": "FabioBarbosaLeiloes",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+    return data
+
+def hammer():
+    urls = ["https://www.hammer.lel.br/lotes/imovel?tipo=imovel&page="]
+    data = []
+    cards = []
+    for url in urls:
+        soup = get_requests(url)
+        links = []
+        try:
+            bar = soup.find("ul", class_="pagination justify-content-center")
+            lis = bar.find_all("li", class_="page-item")
+            numero_paginas = int(lis[-2].text)
+
+            for x in range(numero_paginas):
+                links.append(f"{url}{x+1}")
+
+            for link in links:
+                page = get_requests(link)
+                cards_page = page.find_all("div", class_="lote")
+                for card in cards_page:
+                    cards.append(card)
+
+        except Exception:
+            cards_page = soup.find_all("div", class_="lote")
+            for card in cards_page:
+                cards.append(card)
+
+    for card in cards:
+        img = card.find("div", class_="col-12 col-lg-2").find("a", class_="rounded").get("style")
+        img = re.search(r"url\('([^']+)'\)", img)
+        img_cover = img.group(1) if img else None
+
+        name = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").find("h5").text
+        
+        info_div = card.find("div", class_="col-12 col-lg-7 text-justify")
+
+        try:
+            address = info_div.find("div").find("div").text.split('\n')
+            for linha in address:
+                if "Cidade:" in linha:
+                    city1 = linha.split("Cidade:")
+
+                    if len(city1) > 1:
+                        city = city1[1].strip()
+                        
+                if "Endereço:" in linha:
+                    address_p = linha.split("Endereço:")
+
+                    if len(address_p) > 1:
+                        address1 = address_p[1].strip().split('   ')[0]
+                        break
+            address = f"{address1}, {city}"
+            
+        except Exception:
+            try:
+                address = info_div.find("div").find("div").text.split('\n')
+                for linha in address:
+                    if "Cidade:" in linha:
+                        city1 = linha.split("Cidade:")
+
+                        if len(city1) > 1:
+                            city = city1[1].strip()
+
+                address = city
+            except Exception:
+                address = None
+
+        link = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").get("href")      
+        if "https://www.hammer.lel" not in link:
+            continue
+        soup = get_requests(link)
+        
+        def extrair_valor(texto):
+            if texto:
+                match = re.search(r'R\$([\d\.]+,\d+)', texto)
+                return match.group(1) if match else None
+            return None
+
+        # Encontrar todos os elementos <h6>
+        h6_elements = soup.find_all('h6', class_="text-center border-top p-2 m-0")
+
+        # Inicializando variáveis
+        appraisal_value = None
+        value1 = None
+        value2 = None
+
+        # Iterar sobre os elementos encontrados
+        for element in h6_elements:
+            if "Valor de Avaliação:" in element.text:
+                appraisal_value = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+            elif "Lance Inicial:" in element.text:
+                if value1 is None:
+                    value1 = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+                else:
+                    value2 = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+
+        if value1 and value2 is not None:
+            value = min(value1, value2)
+        
+        elif value1 is not None:
+            value = value1
+
+        elif value2 is not None:
+            value = value2
+
+        else:
+            value = appraisal_value
+
+        descricao = soup.find("div", class_="mb-3 p-2 border rounded text-justify").find_all("div")[-1].text
+        areas = get_areas(descricao)
+
+        area_util = areas[0]
+        area_total = areas[1]
+
+        data_unit = {"Site": "Hammer",
+                        "Nome": name,
+                        "Endereço": address,
+                        "Área Útil": area_util,
+                        "Área Total": area_total,
+                        "Valor": value,
+                        "Valor da Avaliação": appraisal_value,
+                        "Link oferta": link,
+                        "Link imagem da capa": img_cover
+                        }
+        data.append(data_unit)
+    return data
+
+def mpleilao():
+    urls = ["https://www.mpleilao.com.br/leilao/lotes/imoveis"]
+    cards = []
+    for url in urls:
+        soup = get_requests(url)
+        cards_page = soup.find_all("div", class_="col-12 col-md-6 col-lg-4 col-xl-3")
+        for card in cards_page:
+            cards.append(card)
+
+    data = []
+    for card in cards:
+        try:
+            link = card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")
+            link = f"https://www.mpleilao.com.br{link}"
+            img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
+        except Exception:
+            try:
+                link = card.find("div", class_="card-header card-header-image").find("a").get("href")
+                link = f"https://www.mpleilao.com.br{link}"
+                img_cover = card.find("div", class_="card-header card-header-image").find("a").find("img").get("src")
+            except Exception:
+                link = card.find("a", class_="btn btn-link btn-block").get("href")
+                link = f"https://www.mpleilao.com.br{link}"
+                img_cover = "https://www.mpleilao.com.br/build/images/nopicture.png"
+
+        soup = get_requests(link)
+
+        name = soup.find("h4", class_="card-title").text.replace("\n", " ")
+        while "  " in name:
+            name = name.replace("  ", " ")
+        name = name.lstrip().rstrip()
+        address = None #site não tem esse campo, tendo apenas no título
+        appraisal_value = None
+        try:
+            appraisal_value = float(soup.find("div", class_="card-body text-center").find("h4").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        except Exception:
+            pass
+        value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+
+        descricao = None
+        try:
+            descricao = soup.find("div", class_="col-12 descricao").text.replace("\n", " ").lstrip().rstrip()
+            areas = get_areas(descricao)
+
+            area_util = areas[0]
+            area_total = areas[1]
+        except Exception:
+            area_util = None
+            area_total = None
+
+        data_unit = {"Site": "MPLeilao",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+    return data
+
+def scholanteleiloes():
+    urls = ["https://www.scholanteleiloes.com.br/leilao/lotes/imoveis"]
+    cards = []
+    for url in urls:
+        soup = get_requests(url)
+        cards_page = soup.find_all("div", class_="col-12 col-md-6 col-lg-4 col-xl-3")
+        for card in cards_page:
+            cards.append(card)
+
+    data = []
+    for card in cards:
+        try:
+            link = card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")
+            link = f"https://www.scholanteleiloes.com.br{link}"
+            img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
+        except Exception:
+            try:
+                link = card.find("div", class_="card-header card-header-image").find("a").get("href")
+                link = f"https://www.scholanteleiloes.com.br{link}"
+                img_cover = card.find("div", class_="card-header card-header-image").find("a").find("img").get("src")
+            except Exception:
+                link = card.find("a", class_="btn btn-link btn-block").get("href")
+                link = f"https://www.scholanteleiloes.com.br{link}"
+                img_cover = "https://www.scholanteleiloes.com.br/build/images/nopicture.png"
+
+        soup = get_requests(link)
+
+        name = soup.find("h4", class_="card-title").text.replace("\n", " ")
+        while "  " in name:
+            name = name.replace("  ", " ")
+        name = name.lstrip().rstrip()
+        address = None #site não tem esse campo, tendo apenas no título
+        appraisal_value = None
+        try:
+            appraisal_value = float(soup.find("div", class_="card-body text-center").find("h4").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        except Exception:
+            pass
+        value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+
+        descricao = None
+        try:
+            descricao = soup.find("div", class_="col-12 descricao").text.replace("\n", " ").lstrip().rstrip()
+            areas = get_areas(descricao)
+
+            area_util = areas[0]
+            area_total = areas[1]
+        except Exception:
+            area_util = None
+            area_total = None
+
+        data_unit = {"Site": "ScholanteLeiloes",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+    return data
+
+def trestorresleiloes():
+    urls = ["https://www.3torresleiloes.com.br/lotes/imovel?tipo=imovel&page="]
+    data = []
+    cards = []
+    for url in urls:
+        soup = get_requests(url)
+        links = []
+        try:
+            bar = soup.find("ul", class_="pagination justify-content-center")
+            lis = bar.find_all("li", class_="page-item")
+            numero_paginas = int(lis[-2].text)
+
+            for x in range(numero_paginas):
+                links.append(f"{url}{x+1}")
+
+            for link in links:
+                page = get_requests(link)
+                cards_page = page.find_all("div", class_="lote")
+                for card in cards_page:
+                    cards.append(card)
+
+        except Exception:
+            cards_page = soup.find_all("div", class_="lote")
+            for card in cards_page:
+                cards.append(card)
+
+    for card in cards:
+        try:
+            img = card.find("div", class_="col-12 col-lg-2").find("a", class_="rounded").get("style")
+            img = re.search(r"url\('([^']+)'\)", img)
+            img_cover = img.group(1) if img else None
+
+        except Exception:
+            continue
+
+        name = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").find("h5").text
+        
+        info_div = card.find("div", class_="col-12 col-lg-7 text-justify")
+
+        try:
+            address = info_div.find("div").find("div").text.split('\n')
+            for linha in address:
+                if "Cidade:" in linha:
+                    city1 = linha.split("Cidade:")
+
+                    if len(city1) > 1:
+                        city = city1[1].strip()
+                        
+                if "Endereço:" in linha:
+                    address_p = linha.split("Endereço:")
+
+                    if len(address_p) > 1:
+                        address1 = address_p[1].strip().split('   ')[0]
+                        break
+            address = f"{address1}, {city}"
+            
+        except Exception:
+            try:
+                address = info_div.find("div").find("div").text.split('\n')
+                for linha in address:
+                    if "Cidade:" in linha:
+                        city1 = linha.split("Cidade:")
+
+                        if len(city1) > 1:
+                            city = city1[1].strip()
+
+                address = city
+            except Exception:
+                address = None
+
+        link = card.find("div", class_="col-12 col-lg-7 text-justify").find("a").get("href")      
+        if "https://www.3torresleiloes" not in link:
+            continue
+        soup = get_requests(link)
+        
+        def extrair_valor(texto):
+            if texto:
+                match = re.search(r'R\$([\d\.]+,\d+)', texto)
+                return match.group(1) if match else None
+            return None
+
+        # Encontrar todos os elementos <h6>
+        h6_elements = soup.find_all('h6', class_="text-center border-top p-2 m-0")
+
+        # Inicializando variáveis
+        appraisal_value = None
+        value1 = None
+        value2 = None
+
+        # Iterar sobre os elementos encontrados
+        for element in h6_elements:
+            if "Valor de Avaliação:" in element.text:
+                appraisal_value = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+            elif "Lance Inicial:" in element.text:
+                if value1 is None:
+                    value1 = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+                else:
+                    value2 = float(extrair_valor(element.text).replace('.', '').replace(',', '.'))
+
+        if value1 and value2 is not None:
+            value = min(value1, value2)
+        
+        elif value1 is not None:
+            value = value1
+
+        elif value2 is not None:
+            value = value2
+
+        else:
+            value = appraisal_value
+
+        descricao = soup.find("div", class_="mb-3 p-2 border rounded text-justify").find_all("div")[-1].text
+        areas = get_areas(descricao)
+
+        area_util = areas[0]
+        area_total = areas[1]
+
+        data_unit = {"Site": "TresTorresLeiloes",
+                        "Nome": name,
+                        "Endereço": address,
+                        "Área Útil": area_util,
+                        "Área Total": area_total,
+                        "Valor": value,
+                        "Valor da Avaliação": appraisal_value,
+                        "Link oferta": link,
+                        "Link imagem da capa": img_cover
+                        }
+        data.append(data_unit)
+    return data
+
+def santamarialeiloes():
+    urls = ["https://www.santamarialeiloes.com.br/leilao/lotes/imoveis"]
+    cards = []
+    for url in urls:
+        soup = get_requests(url)
+        cards_page = soup.find_all("div", class_="col-12 col-md-6 col-lg-4 col-xl-3")
+        for card in cards_page:
+            cards.append(card)
+
+    data = []
+    for card in cards:
+        try:
+            link = card.find("div", class_="back").find("div", class_="card-footer").find("a").get("href")
+            link = f"https://www.santamarialeiloes.com.br{link}"
+            img_cover = card.find("div", class_="front").find("div", class_="carousel-inner").find("img").get("src")
+        except Exception:
+            try:
+                link = card.find("div", class_="card-header card-header-image").find("a").get("href")
+                link = f"https://www.santamarialeiloes.com.br{link}"
+                img_cover = card.find("div", class_="card-header card-header-image").find("a").find("img").get("src")
+            except Exception:
+                link = card.find("a", class_="btn btn-link btn-block").get("href")
+                link = f"https://www.santamarialeiloes.com.br{link}"
+                img_cover = "https://www.santamarialeiloes.com.br/build/images/nopicture.png"
+
+        soup = get_requests(link)
+
+        name = soup.find("h4", class_="card-title").text.replace("\n", " ")
+        while "  " in name:
+            name = name.replace("  ", " ")
+        if len(name) > 150:
+            name = f"{name[:100]}..."
+        name = name.lstrip().rstrip()
+
+        address = None #site não tem esse campo, tendo apenas no título
+        appraisal_value = None
+        try:
+            appraisal_value = float(soup.find("div", class_="card-body text-center").find("h4").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        except Exception:
+            pass
+        value = float(soup.find("p", class_="lance-inicial-valor").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+
+        descricao = None
+        try:
+            descricao = soup.find("div", class_="col-12 descricao").text.replace("\n", " ").lstrip().rstrip()
+            areas = get_areas(descricao)
+
+            area_util = areas[0]
+            area_total = areas[1]
+        except Exception:
+            area_util = None
+            area_total = None
+
+        data_unit = {"Site": "SantaMariaLeiloes",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+    return data
+
+def baldisseraleiloeiros():
+    soup = get_selenium_more_visited("https://www.baldisseraleiloeiros.com.br/home")
+    cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
+    data = []
+    for card in cards:
+        img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
+        if "/assets/images/" in img_cover:
+            continue
+        id_leilao = img_cover.split("/")
+        link = f"https://www.baldisseraleiloeiros.com.br/pregao/{id_leilao[-3]}/{id_leilao[-2]}"
+        name = card.find("div").find("h4").text
+        if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
+            continue
+
+        soup = get_selenium(link)
+
+        values_list = []
+        value = None
+        values = soup.find_all("div", style="margin-top: 15px; flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-between; align-items: stretch;")
+        for x in values:
+            x = x.text
+            if "$" in x:
+                values_list.append(float(x.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
+        try:
+            value = min(values_list)
+        except Exception:
+            pass
+
+        descricao = soup.find("p", style="margin-top: 15px; text-align: justify; margin-bottom: 20px;").text.replace("\n\xa0\n", " ")
+        
+        infos = soup.find("mat-card", class_="mat-card mat-focus-indicator ng-star-inserted").find_all("p")
+        infos_add = []
+        for info in infos:
+            info = info.text
+            print(info)
+            print(len(info))
+            if info ==" Endereço: /" or info ==" Cidade/Estado: /":
+                continue
+            elif "Endereço:" in info:
+                infos_add.append(info.split("Endereço:")[1].lstrip().rstrip())
+            elif "Cidade/Estado:" in info:   
+                infos_add.append(info.split("Cidade/Estado:")[1].lstrip().rstrip())
+        if len(infos_add) < 2:
+            infos_add.append(None)
+            infos_add.append(None)
+
+        address = f"{infos_add[1]}, {infos_add[0]}"
+        if address == "None, None":
+            address = None
+        areas = get_areas(descricao)
+        area_util = areas[0]
+        area_total = areas[1]
+
+        appraisal_value = None
+        try:
+            appraisal_value = float(soup.find("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;").find_all("div", style="flex-direction: column; box-sizing: border-box; display: flex;")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        except Exception:
+            try:
+                appraisal_value = float(soup.find_all("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;")[1].find_all("div")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
+            except Exception:
+                pass
+
+        data_unit = {"Site": "BaldisseraLeiloeiros",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+        print(data)
+        break
+    return data
+
 
 
 if __name__ == "__main__":
@@ -5354,7 +6055,12 @@ if __name__ == "__main__":
     #milanleiloes()
     #rauppleiloes()
     #pwleiloes()
-    clicleiloes()
-
-
-
+    #clicleiloes()
+    #rjleiloes()
+    #fabiobarbosaleiloes()
+    #hammer()
+    #mpleilao()
+    #scholanteleiloes()
+    #trestorresleiloes()
+    #santamarialeiloes()
+    baldisseraleiloeiros()

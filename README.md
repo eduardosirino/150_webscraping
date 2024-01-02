@@ -41,6 +41,9 @@ ps aux | grep main.py
 128 - https://www.lancese.com.br/ - Mesmo site do 9  
 126 - https://www.confiancaleiloes.com.br/ - mesmos resultados do 122  
 54 - https://www.d1lance.com.br/ - mesmo do 105  
+18 - https://nortonleiloes.com.br/externo/ - redireciona para o 43  
+
+
 
 
 #### Estão com problemas e vou tentar de outras formas
@@ -50,29 +53,22 @@ ps aux | grep main.py
 16 - https://www.lessaleiloes.com.br/ - não pronto, deu erro (vou tentar com undetected ou selenium base depois)  
 83 - https://www.norteleiloes.com.br/ - 403 com requests e erro com selenium  
 71 - https://www.wrleiloes.com.br/ - não tem leilão cadastrado para criar o código  
-
+37 - https://satoleiloes.com.br - problema grande - sem link para acesso a página do leilão  
 
 
 
 ### Falta
 6 - https://www.trt12.jus.br/portal/areas/ascom/extranet/destaques/leiloes.jsp  
-7 - https://www.kleiloes.com.br/Agenda.aspx  
-17 - https://www.scholanteleiloes.com.br/  
-18 - https://nortonleiloes.com.br/externo/  
+7 - https://www.kleiloes.com.br/  
 19 - https://leje.com.br/  
-22 - https://www.mpleilao.com.br/  
 25 - https://www.sold.com.br/  
 28 - https://www.centralsuldeleiloes.com.br/  
-29 - https://www.santamarialeiloes.com.br/  
+
 30 - https://www.freitasleiloeiro.com.br/  
 33 - https://www.leilaovip.com.br/  
 35 - https://kriegerleiloes.com.br/  
 36 - https://seuimovelbb.com.br/  
-37 - https://satoleiloes.com.br/
-searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&orderBy=endDate:asc  
-44 - https://hammer.lel.br/  
 45 - https://www.caixa.gov.br/voce/habitacao/imoveis-venda/Paginas/default.aspx  
-46 - https://www.3torresleiloes.com.br/  
 47 - https://www.hastaleiloes.com.br/  
 50 - https://www.balbinoleiloes.com.br/externo/  
 51 - https://www.kronbergleiloes.com.br/  
@@ -83,15 +79,12 @@ searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&o
 61 - https://www.deonizialeiloes.com.br/externo/lotes/37947  
 62 - https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormCorrecaoValores.do?method=exibirFormCorrecaoValores  
 63 - https://www.nakakogueleiloes.com.br/  
-66 - https://www.patricialeiloeira.com.br/  
 68 - https://www.gpleiloes.com.br//#/  
 69 - https://www.baldisseraleiloeiros.com.br/ - n fun  
 72 - https://www.hdleiloes.com.br/externo/  
 73 - https://www.casaleiloeira.com.br/  
 74 - https://www.leiloescentrooeste.com.br/externo/  
 75 - https://www.alvaroleiloes.com.br/externo/  
-76 - https://www.fabiobarbosaleiloes.com.br/externo/  
-77 - https://www.rjleiloes.com.br/  
 78 - https://banco.bradesco/html/classic/produtos-servicos/leiloes/index.shtm  
 80 - https://www.leilaovip.com.br/home  
 81 - https://www.palaciodosleiloes.com.br/  
@@ -162,8 +155,7 @@ searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&o
 110 - https://www.nasarleiloes.com.br/ - PRONTO  
 111 - https://www.pecinileiloes.com.br/ - PRONTO  
 113 - https://www.montenegroleiloes.com.br/ - PRONTO  
-118 - https://www.agostinholeiloes.com.br/
- - PRONTO  
+118 - https://www.agostinholeiloes.com.br/ - PRONTO  
  122 - https://www.e-leiloeiro.com.br/ - PRONTO  
  64 - https://www.machadoleiloes.com.br/ - PRONTO  
 89 - https://www.maxxleiloes.com.br/ - PRONTO  
@@ -178,6 +170,14 @@ searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&o
 79 - https://www.milanleiloes.com.br/ - PRONTO  
 23 - https://www.rauppleiloes.com.br/ - PRONTO  
 53 - https://www.clicleiloes.com.br/ - PRONTO  
+66 - https://www.patricialeiloeira.com.br/ - PRONTO (pwleiloes)  
+77 - https://www.rjleiloes.com.br/ - PRONTO  
+76 - https://www.fabiobarbosaleiloes.com.br/externo/ - PRONTO  
+44 - https://hammer.lel.br/ - PRONTO  
+22 - https://www.mpleilao.com.br/ - PRONTO  
+17 - https://www.scholanteleiloes.com.br/ - PRONTO  
+46 - https://www.3torresleiloes.com.br/ - PRONTO  
+29 - https://www.santamarialeiloes.com.br/ - PRONTO  
 
 
 
