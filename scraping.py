@@ -4824,7 +4824,7 @@ def frazaoleiloes():
         name = card.find("div", class_="lote-information").text.lstrip().rstrip()
         if "teste" in name.lower():
             continue
-        link = f"https://www.frazaoleiloes.com.br{card.find("a").get("href")}"
+        link = f"https://www.frazaoleiloes.com.br{card.find('a').get('href')}"
         img_cover = card.find("div", class_="photo-lot").find("img").get("src")
 
         values = []
