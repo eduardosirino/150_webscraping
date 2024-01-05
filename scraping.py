@@ -4869,7 +4869,7 @@ def peterlongoleiloes():
         imgs = card.find("div", class_="cont-foto").find("a").find("div").get("style").split("(")
         for img in imgs:
             if "/build/" in img:
-                img_cover = f"https://peterlongoleiloes.com.br{img.split(")")[0]}"
+                img_cover = f"https://peterlongoleiloes.com.br{img.split(')')[0]}"
 
         soup = get_requests(link)
 
@@ -4906,7 +4906,7 @@ def lbleiloes():
     data = []
     for card in cards:
         name = card.find("span", class_="titulo-lote").text.lstrip().rstrip()
-        link = f"https://www.lbleiloes.com.br{card.find("a", class_="botao").get("href")}"
+        link = f"https://www.lbleiloes.com.br{card.find('a', class_='botao').get('href')}"
         img_cover = card.find("div", class_="img-lote").find("img").get("src")
 
         soup = get_requests(link)
@@ -4940,8 +4940,8 @@ def milanleiloes():
     
     data = []
     for card in cards:
-        link = f"https://www.milanleiloes.com.br/Editais/ExtraJudicial/Bradesco.asp?CL={card.get("onclick").split("(")[1].split(",")[0]}"
-        img_cover = f"https://www.milanleiloes.com.br{card.find("div", class_="divLogosLeilaoInner").find("img").get("src")}"
+        link = f"https://www.milanleiloes.com.br/Editais/ExtraJudicial/Bradesco.asp?CL={card.get('onclick').split('(')[1].split(',')[0]}"
+        img_cover = f"https://www.milanleiloes.com.br{card.find('div', class_='divLogosLeilaoInner').find('img').get('src')}"
         infos = card.find("div", class_="descricaoLeilao").text.split("\n\n")
         name = infos[0].replace("\n", "").replace("\r", "").replace("\t", "").lstrip().rstrip()
 
@@ -5345,7 +5345,7 @@ def fabiobarbosaleiloes():
         if "ABERTO PARA LANCES" in situacao:
             name_leilao = url.get("title")
             if "simulação" not in name_leilao.lower():
-                url = f"https://www.fabiobarbosaleiloes.com.br{url.get("href")}"
+                url = f"https://www.fabiobarbosaleiloes.com.br{url.get('href')}"
                 soup = get_selenium(url)
                 cards_divs = soup.find("div", class_="l-leilao").find_all("div", class_="c-linha")
                 for card in cards_divs:
@@ -5357,7 +5357,7 @@ def fabiobarbosaleiloes():
     for card in cards:
         img_cover = card.find("div", class_="c-foto-bem").find("img").get("src")
         link = card.find("a").get("href")
-        name = f"{card.find("p", class_="c-descricao-lote").text.lstrip().rstrip()[:50]}..." #site não tem nome, então usei os 50 primeiros caracteres da descrição
+        name = f"{card.find('p', class_='c-descricao-lote').text.lstrip().rstrip()[:50]}..." #site não tem nome, então usei os 50 primeiros caracteres da descrição
         if "automovel" in name.lower() or "automóvel" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "vw" in name.lower() or "fiat" in name.lower() or "chevrolet" in name.lower() or "volksvagem" in name.lower():
             continue
         soup = get_selenium(link)
@@ -5957,7 +5957,7 @@ def psnleiloes():
     data = []
     for card in cards:
         name = card.find("section", class_="meio").find("h3", class_="titulo-lote").text.lstrip().rstrip()
-        link = f"https://www.psnleiloes.com.br/{card.find("section", class_="direita").find("a", class_="botao").get("href")}"
+        link = f"https://www.psnleiloes.com.br/{card.find('section', class_='direita').find('a', class_='botao').get('href')}"
         
         infos = card.find("section", class_="meio").find_all("span")
         situacao = infos[-1].text.replace("Situação:", "").lstrip().rstrip()
@@ -5975,7 +5975,7 @@ def psnleiloes():
         
         soup = get_selenium(link)
 
-        img_cover = f"https://www.psnleiloes.com.br/{soup.find("img", class_="fotorama__img").get("src")}"
+        img_cover = f"https://www.psnleiloes.com.br/{soup.find('img', class_='fotorama__img').get('src')}"
         descricao = soup.find("div", id="obsprod").find("li").text
         areas = get_areas(descricao)
 
