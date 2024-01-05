@@ -4865,7 +4865,7 @@ def peterlongoleiloes():
     data = []
     for card in cards:
         name = card.find("div", class_="cont-infos").find("h3").find("a").text.lstrip().rstrip()
-        link = f"https://peterlongoleiloes.com.br{card.find("div", class_="cont-foto").find("a").get("href")}"
+        link = f"https://peterlongoleiloes.com.br{card.find('div', class_='cont-foto').find('a').get('href')}"
         imgs = card.find("div", class_="cont-foto").find("a").find("div").get("style").split("(")
         for img in imgs:
             if "/build/" in img:
@@ -5923,10 +5923,10 @@ def nakakogueleiloes():
                 value = float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
             elif "Valor Avaliado:" in info:
                 appraisal_value = float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
-        link = f"https://www.nakakogueleiloes.com.br/{card.find("section", class_="direita").find("a", class_="botao").get("href")}"
+        link = f"https://www.nakakogueleiloes.com.br/{card.find('section', class_='direita').find('a', class_='botao').get('href')}"
 
         soup = get_selenium(link)
-        img_cover = f"https://www.nakakogueleiloes.com.br/{soup.find("img", class_="fotorama__img").get("src")}"
+        img_cover = f"https://www.nakakogueleiloes.com.br/{soup.find('img', class_='fotorama__img').get('src')}"
         descricao = soup.find("div", id="obsprod").find("li").text
         areas = get_areas(descricao)
 
@@ -6247,7 +6247,7 @@ def pestanaleiloes():
         complemento = None
 
         name = card.find("h3", style="overflow: hidden; margin: 0px 0px 10px; line-height: 1.1em; min-height: 3.3em; max-height: 3.3em; color: rgba(0, 0, 0, 0.87); font-size: 18px; font-weight: 500;").text.lstrip().rstrip()
-        link = f"https://www.pestanaleiloes.com.br{card.find("a").get("href")}"
+        link = f"https://www.pestanaleiloes.com.br{card.find('a').get('href')}"
         soup = get_selenium(link)
         infos = soup.find_all("div", class_="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone d-inline-block carateristica-item print-col-50-no-margin")
         try:
@@ -6328,7 +6328,7 @@ def hdleiloes():
         name_leilao = leilao.find("div", class_="c-dados-leilao").find("span", style="font-size:14px;font-weight:bold;font-family:Arial").text
 
         if "ABERTO PARA LANCES" in situacao and "simulação" not in name_leilao.lower() and "situacao" not in name_leilao.lower():
-            link_leilao = f"https://www.hdleiloes.com.br{leilao.get("href")}"
+            link_leilao = f"https://www.hdleiloes.com.br{leilao.get('href')}"
             
             soup = get_selenium_no_headless(link_leilao)
             cards_page = soup.find("div", class_="c-bens").find_all("div", class_="c-bem azul")
