@@ -19,7 +19,7 @@ def conectar_mysql(host, database, user, password, port):
         connection = mysql.connector.connect(host=host,
                                              database=database,
                                              user=user,
-                                             password=password
+                                             password=password,
                                              port=port)
         if connection.is_connected():
             return connection
