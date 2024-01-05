@@ -4753,7 +4753,7 @@ def hastavip():
             except Exception:
                 pass
 
-        link = f"https://www.hastavip.com.br{card.find("a").get("href")}"
+        link = f"https://www.hastavip.com.br{card.find('a').get('href')}"
         if "https://www.hastavip.com.br/lote/" not in link:
             continue
 
