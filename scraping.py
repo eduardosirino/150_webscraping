@@ -3307,7 +3307,7 @@ def kleiloes():
     data = []
     for card in cards:
         name = card.find("a").text
-        link = f"https://www.kleiloes.com.br{card.find("a").get("href")}"
+        link = f"https://www.kleiloes.com.br{card.find('a').get('href')}"
         appraisal_value = float(card.find("td", class_="text-center").text.lstrip().rstrip().replace('.', '').replace(',', '.'))
 
         soup = get_requests(link)
