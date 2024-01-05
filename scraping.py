@@ -4786,7 +4786,7 @@ def hastavip():
         except Exception:
             pass
 
-        address = f"{soup.find("span", id="Holder_lblEndereco").text.lstrip().rstrip()}, no município de {soup.find("span", id="Holder_lblCidade").text.lstrip().rstrip()}/{soup.find("span", id="Holder_lblUF").text.lstrip().rstrip()}"
+        address = f"{soup.find('span', id='Holder_lblEndereco').text.lstrip().rstrip()}, no município de {soup.find('span', id='Holder_lblCidade').text.lstrip().rstrip()}/{soup.find('span', id='Holder_lblUF').text.lstrip().rstrip()}"
         
         descricao = soup.find("span", id="Holder_lblDescricao").text
         areas = get_areas(descricao)
