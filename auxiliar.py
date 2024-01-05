@@ -2,22 +2,25 @@ import re
 import time
 import json
 import requests
+import platform
 import credenciais
 import mysql.connector
-from mysql.connector import Error
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from mysql.connector import Error
+from pyvirtualdisplay import Display
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 
 
-def conectar_mysql(host, database, user, password):
+def conectar_mysql(host, database, user, password, port):
     try:
         connection = mysql.connector.connect(host=host,
                                              database=database,
                                              user=user,
-                                             password=password)
+                                             password=password
+                                             port=port)
         if connection.is_connected():
             return connection
     except Error as e:
@@ -25,8 +28,8 @@ def conectar_mysql(host, database, user, password):
 
 
 def update_db (data):
-    quit()
-    connection = conectar_mysql("host", "database", "user", "password")
+
+    connection = conectar_mysql("database-scraping.cfwkwe6mmkm5.us-east-2.rds.amazonaws.com", "database-scraping", "admin_scraping", "Ws-596284", "3306")
     
     if connection.is_connected():
         cursor = connection.cursor()
@@ -264,3 +267,34 @@ def extract_areas(text):
 def get_areas(text):
     area_util, area_total = extract_areas(text)
     return [area_util, area_total]
+
+def get_selenium_no_headless(url):
+    # Configurar o driver do Selenium
+    chrome_options = Options()
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--disable-dev-shm-usage')
+
+    if platform.system() == "Windows":
+        pass
+    else:
+        # Iniciar o display virtual
+        display = Display(visible=0, size=(1024, 768), backend="xvfb")
+        display.start()
+
+    driver = webdriver.Chrome(options=chrome_options)
+    driver.set_window_size(1024, 768)
+
+    # Abrir a página
+    driver.get(url)
+
+    time.sleep(7)
+
+    # Obter o HTML da página após o carregamento do conteúdo
+    html_content = driver.page_source
+
+    # Fechar o driver
+    driver.quit()
+
+    # Criar e retornar o objeto BeautifulSoup
+    soup = BeautifulSoup(html_content, "html.parser")
+    return soup

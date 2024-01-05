@@ -6,21 +6,11 @@ import threading
 import subprocess
 from datetime import datetime
 from auxiliar import update_db
-from scraping import mullerleiloes, lancese, francoleiloes, leilaosantos, leiloeirobonatto, rymerleiloes, grupolance, megaleiloes, vivaleiloes, biasileiloes, sanchesleiloes, grandesleiloes, lancecertoleiloes, hastapublica, leiloes123, moraesleiloes, oleiloes, stefanellileiloes, globoleiloes, veronicaleiloes, delltaleiloes, krobelleiloes, mazzollileiloes, oesteleiloes, nordesteleiloes, portellaleiloes, rochaleiloes, centraljudicial, simonleiloes, nogarileiloes, trileiloes, alfaleiloes, wspleiloes, fidalgoleiloes, damianileiloes, joaoemilio, cravoleiloes, topleiloes, valerioiaminleiloes, renovarleiloes, agenciadeleiloes, portalzuk, superbid, tonialleiloes, pimentelleiloes, leilaobrasil, saraivaleiloes, kcleiloes, patiorochaleiloes, ccjleiloes, faleiloes, leilaopernambuco, nsleiloes, nasarleiloes, pecinileiloes, montenegroleiloes, agostinholeiloes, eleiloero
+import importlib
+import inspect
 
-# Lista de funções a serem chamadas
-funcoes_leilao = [
-    mullerleiloes, lancese, francoleiloes, leilaosantos, leiloeirobonatto, rymerleiloes,
-    grupolance, megaleiloes, vivaleiloes, biasileiloes, sanchesleiloes, grandesleiloes,
-    lancecertoleiloes, hastapublica, leiloes123, moraesleiloes, oleiloes, stefanellileiloes,
-    globoleiloes, veronicaleiloes, delltaleiloes, krobelleiloes, mazzollileiloes,
-    oesteleiloes, nordesteleiloes, portellaleiloes, rochaleiloes, centraljudicial,
-    simonleiloes, nogarileiloes, trileiloes, alfaleiloes, wspleiloes, fidalgoleiloes,
-    damianileiloes, joaoemilio, cravoleiloes, topleiloes, valerioiaminleiloes, renovarleiloes,
-    agenciadeleiloes, portalzuk, superbid, tonialleiloes, pimentelleiloes, leilaobrasil,
-    saraivaleiloes, kcleiloes, patiorochaleiloes, ccjleiloes, faleiloes, leilaopernambuco,
-    nsleiloes, nasarleiloes, pecinileiloes, montenegroleiloes, agostinholeiloes, eleiloero
-]
+modulo = importlib.import_module("scraping")
+funcoes_leilao = {nome: getattr(modulo, nome) for nome in dir(modulo) if inspect.isfunction(getattr(modulo, nome))}
 
 # Configura o logging
 logging.basicConfig(filename='meu_log.log', level=logging.INFO,
@@ -41,8 +31,8 @@ def chamar_funcao_com_delay(funcao, delay):
 
 def executar_leiloes():
     delay = 0
-    delay_incremento = 10  # 10 segundos de atraso entre cada chamada de função
-    for funcao in funcoes_leilao:
+    delay_incremento = 60  # 60 segundos de atraso entre cada chamada de função
+    for nome_funcao, funcao in funcoes_leilao.items():
         threading.Thread(target=chamar_funcao_com_delay, args=(funcao, delay)).start()
         delay += delay_incremento
 
@@ -55,7 +45,7 @@ def main():
         if agora.hour == 1 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:  # Segunda, Quarta, Sexta
             logging.info(f"Pull concluído em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             fazer_git_pull()
-        if agora.hour == 3 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
+        if agora.hour == 13 and agora.minute == 57 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
             if platform.system() == "Windows":
                 os.system('cls')
             else:

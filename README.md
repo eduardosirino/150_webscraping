@@ -7,8 +7,10 @@ git clone https://github.com/eduardosirino/150_webscraping.git
 
 ### Instalação de dependências:
 sudo apt-get update  
+sudo apt-get upgrade  
 sudo apt-get install xvfb  
-sudo apt-get install chromium-chromedriver  
+sudo apt-get install chromium-chromedriver
+sudo apt install python3-pip    
 pip install logging  
 pip install requests  
 pip install bs4  
@@ -42,14 +44,14 @@ ps aux | grep main.py
 126 - https://www.confiancaleiloes.com.br/ - mesmos resultados do 122  
 54 - https://www.d1lance.com.br/ - mesmo do 105  
 18 - https://nortonleiloes.com.br/externo/ - redireciona para o 43  
+7 - https://www.kleiloes.com.br/ - mesmo do 103  
+
 
 
 
 
 #### Estão com problemas e vou tentar de outras formas
-117 - https://www.maxterleiloes.com.br/home -  Imgens alocadas em assets e não consigo o href da página de cada leilão  
-109 - https://gestordeleiloes.com.br/home - Imgens alocadas em assets e não consigo o href da página de cada leilão  
-10 - https://www.leiloes.com.br/ - Site OFFLINE  
+  
 16 - https://www.lessaleiloes.com.br/ - não pronto, deu erro (vou tentar com undetected ou selenium base depois)  
 83 - https://www.norteleiloes.com.br/ - 403 com requests e erro com selenium  
 71 - https://www.wrleiloes.com.br/ - não tem leilão cadastrado para criar o código  
@@ -59,11 +61,8 @@ ps aux | grep main.py
 
 ### Falta
 6 - https://www.trt12.jus.br/portal/areas/ascom/extranet/destaques/leiloes.jsp  
-7 - https://www.kleiloes.com.br/  
 19 - https://leje.com.br/  
-25 - https://www.sold.com.br/  
 28 - https://www.centralsuldeleiloes.com.br/  
-
 30 - https://www.freitasleiloeiro.com.br/  
 33 - https://www.leilaovip.com.br/  
 35 - https://kriegerleiloes.com.br/  
@@ -78,9 +77,7 @@ ps aux | grep main.py
 60 - https://imoveis.bancointer.com.br/  
 61 - https://www.deonizialeiloes.com.br/externo/lotes/37947  
 62 - https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormCorrecaoValores.do?method=exibirFormCorrecaoValores  
-63 - https://www.nakakogueleiloes.com.br/  
 68 - https://www.gpleiloes.com.br//#/  
-69 - https://www.baldisseraleiloeiros.com.br/ - n fun  
 72 - https://www.hdleiloes.com.br/externo/  
 73 - https://www.casaleiloeira.com.br/  
 74 - https://www.leiloescentrooeste.com.br/externo/  
@@ -91,7 +88,6 @@ ps aux | grep main.py
 82 - https://www.leiloesbrasil.com.br/presite  
 87 - https://www.vipleiloes.com.br/  
 97 - https://www.bspleiloes.com.br/Principal.asp  
-98 - https://www.psnleiloes.com.br/  
 102 - https://www.leiloesjudiciaisrs.com.br/externo/  
 115 - https://www.leiloesjudiciais.com.br/externo/  
 
@@ -178,9 +174,10 @@ ps aux | grep main.py
 17 - https://www.scholanteleiloes.com.br/ - PRONTO  
 46 - https://www.3torresleiloes.com.br/ - PRONTO  
 29 - https://www.santamarialeiloes.com.br/ - PRONTO  
-
-
-
-
-
-
+69 - https://www.baldisseraleiloeiros.com.br/ - PRONTO  
+63 - https://www.nakakogueleiloes.com.br/ - PRONTO  
+98 - https://www.psnleiloes.com.br/ - PRONTO  
+117 - https://www.maxterleiloes.com.br/home -  PRONTO
+109 - https://gestordeleiloes.com.br/home - PRONTO (sem leilão cadastrado agora, porém o site é igual a outros)
+25 - https://www.sold.com.br/ - PRONTO  
+10 - https://www.leiloes.com.br/ - PRONTO (pestana)  

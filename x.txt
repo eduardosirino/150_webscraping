@@ -1,0 +1,60 @@
+
+DevTools listening on ws://127.0.0.1:56295/devtools/browser/e9ba8ea2-278d-4330-a770-9eaa46ed9f92
+
+DevTools listening on ws://127.0.0.1:56344/devtools/browser/939338c9-1b80-4d45-9804-9e573ffc004a
+
+DevTools listening on ws://127.0.0.1:56398/devtools/browser/a6fbdf52-b34d-442e-8553-f090f9d1a60d
+
+DevTools listening on ws://127.0.0.1:56457/devtools/browser/c507d15f-5427-443b-bf3f-ca1a36425b7c
+
+DevTools listening on ws://127.0.0.1:57023/devtools/browser/9f902efe-e9e0-4743-a9fe-7ab73b729eb1
+
+DevTools listening on ws://127.0.0.1:57104/devtools/browser/d36e7004-0bff-4634-b4e0-d11369f5b239
+
+DevTools listening on ws://127.0.0.1:57711/devtools/browser/8771b1ba-882a-49c2-b5e0-5f73fedbc212
+
+DevTools listening on ws://127.0.0.1:58341/devtools/browser/cf372360-f467-405a-957a-981a14a381e2
+Traceback (most recent call last):
+  File "c:\Users\eduar\Documents\GitHub\150_webscraping\scraping.py", line 6477, in <module>
+    hdleiloes()
+  File "c:\Users\eduar\Documents\GitHub\150_webscraping\scraping.py", line 6332, in hdleiloes
+    soup = get_selenium_no_headless(link_leilao)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "c:\Users\eduar\Documents\GitHub\150_webscraping\auxiliar.py", line 283, in get_selenium_no_headless
+    driver = webdriver.Chrome(options=chrome_options)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduar\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\chrome\webdriver.py", line 45, in __init__
+    super().__init__(
+  File "C:\Users\eduar\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\chromium\webdriver.py", line 56, in __init__
+    super().__init__(
+  File "C:\Users\eduar\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 208, in __init__
+    self.start_session(capabilities)
+  File "C:\Users\eduar\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 292, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduar\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\webdriver.py", line 347, in execute
+    self.error_handler.check_response(response)
+  File "C:\Users\eduar\AppData\Local\Programs\Python\Python312\Lib\site-packages\selenium\webdriver\remote\errorhandler.py", line 229, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: DevToolsActivePort file doesn't exist
+Stacktrace:
+        GetHandleVerifier [0x00007FF7DFEA2142+3514994]
+        (No symbol) [0x00007FF7DFAC0CE2]
+        (No symbol) [0x00007FF7DF9676AA]
+        (No symbol) [0x00007FF7DF9A015F]
+        (No symbol) [0x00007FF7DF99BB70]
+        (No symbol) [0x00007FF7DF997F52]
+        (No symbol) [0x00007FF7DF9E0AB4]
+        (No symbol) [0x00007FF7DF9D5D93]
+        (No symbol) [0x00007FF7DF9A4BDC]
+        (No symbol) [0x00007FF7DF9A5C64]
+        GetHandleVerifier [0x00007FF7DFECE16B+3695259]
+        GetHandleVerifier [0x00007FF7DFF26737+4057191]
+        GetHandleVerifier [0x00007FF7DFF1E4E3+4023827]
+        GetHandleVerifier [0x00007FF7DFBF04F9+689705]
+        (No symbol) [0x00007FF7DFACC048]
+        (No symbol) [0x00007FF7DFAC8044]
+        (No symbol) [0x00007FF7DFAC81C9]
+        (No symbol) [0x00007FF7DFAB88C4]
+        BaseThreadInitThunk [0x00007FFA7CE2257D+29]
+        RtlUserThreadStart [0x00007FFA7E02AA58+40]
