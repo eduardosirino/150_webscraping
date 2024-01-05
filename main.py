@@ -45,7 +45,7 @@ def main():
         if agora.hour == 1 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:  # Segunda, Quarta, Sexta
             logging.info(f"Pull concluído em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             fazer_git_pull()
-        if agora.hour == 14 and agora.minute == 10 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
+        if agora.hour == 14 and agora.minute == 25 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
             if platform.system() == "Windows":
                 os.system('cls')
             else:
