@@ -11,14 +11,10 @@ sudo apt-get upgrade
 sudo apt-get install xvfb  
 sudo apt-get install chromium-chromedriver
 sudo apt install python3-pip    
-pip install logging  
-pip install importlib  
-pip install inspect  
 pip install requests  
 pip install bs4  
 pip install selenium  
 pip install pyvirtualdisplay  
-pip install mysql  
 pip install mysql-connector-python  
 
 ### Altera o Horário do servidor:
