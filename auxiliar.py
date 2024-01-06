@@ -27,28 +27,36 @@ def conectar_mysql(host, database, user, password, port):
         print("Erro ao conectar ao MySQL", e)
 
 
-def update_db (data):
+def update_db(data_list):
 
-    connection = conectar_mysql("database-scraping.cfwkwe6mmkm5.us-east-2.rds.amazonaws.com", "database-scraping", "admin_scraping", "Ws-596284", "3306")
+    connection = conectar_mysql("db-webscraping.cfwkwe6mmkm5.us-east-2.rds.amazonaws.com", "db_webscraping1", "db_admin", "dbADM95WS", "3306")
     
     if connection.is_connected():
         cursor = connection.cursor()
 
-        # Exclui todos os registros existentes para o site especificado
-        query_delete = "DELETE FROM sua_tabela WHERE Site = %s"
-        cursor.execute(query_delete, (data['Site'],))
-        connection.commit()
+        # Verifica se a lista de dados não está vazia
+        if data_list:
+            # Exclui todos os registros existentes para o site do primeiro item da lista
+            query_delete = "DELETE FROM table_itens WHERE Site = %s"
+            cursor.execute(query_delete, (data_list[0]['Site'],))
+            connection.commit()
 
-        # Insere um novo registro
-        query_insert = """
-            INSERT INTO sua_tabela (Site, Nome, Endereço, `Área Útil`, `Área Total`, Valor, `Valor da Avaliação`, `Link oferta`, `Link imagem da capa`)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        valores = (data['Site'], data['Nome'], data['Endereço'], data['Área Útil'], data['Área Total'], 
-                   data['Valor'], data['Valor da Avaliação'], data['Link oferta'], data['Link imagem da capa'])
-        cursor.execute(query_insert, valores)
+            # Prepara a query de inserção
+            query_insert = """
+                INSERT INTO table_itens (Site, Nome, Endereço, `Área Útil`, `Área Total`, Valor, `Valor da Avaliação`, `Link oferta`, `Link imagem da capa`)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
 
-        connection.commit()
+            # Insere cada item da lista
+            for data in data_list:
+                valores = (data['Site'], data['Nome'], data['Endereço'], data['Área Útil'], data['Área Total'], 
+                           data['Valor'], data['Valor da Avaliação'], data['Link oferta'], data['Link imagem da capa'])
+                cursor.execute(query_insert, valores)
+                print("valor inserido")
+            # Confirma as mudanças
+            connection.commit()
+            print("VALORES CONFIRMADOS")
+
         cursor.close()
         connection.close()
     else:

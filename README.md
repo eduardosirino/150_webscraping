@@ -183,3 +183,5 @@ ps aux | grep main.py
 109 - https://gestordeleiloes.com.br/home - PRONTO (sem leilão cadastrado agora, porém o site é igual a outros)
 25 - https://www.sold.com.br/ - PRONTO  
 10 - https://www.leiloes.com.br/ - PRONTO (pestana)  
+
+

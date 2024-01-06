@@ -257,13 +257,14 @@ def francoleiloes():
         soup = get_requests(link["link"])
         name = soup.find("div", class_="col-lg-12 col-md-12 col-sm-12 margin-bottom-20 desc").find("p").text[:100] + "..."
         address = soup.find("span", class_="primeiraLetra observations").text
-                
+
+        value0 = None
+        value1 = None
+        value2 = None    
         divs_value = soup.find("div", "col-lg-6 col-md-6 col-sm-12 col-xs-12 infoDir").find_all("span", class_="margin-top-2 weight-normal")
         for div in divs_value:
             text_div = div.find("strong")
-            value0 = None
-            value1 = None
-            value2 = None
+            
             try:
                 value0 = text_div.get_text() if text_div else None
                 value0 = float(value0.split("$")[1].replace('.', '').replace(',', '.'))
@@ -303,11 +304,11 @@ def francoleiloes():
             
             # Verifica se alguma palavra em util_keywords está no texto
             if any(keyword in text for keyword in util_keywords):
-                area_util = text.split(":")[1].strip()
+                area_util = text.split(":")[1].strip().replace("m2", "").replace("m²", "").replace(" ", "")
 
             # Verifica se alguma palavra em total_keywords está no texto
             elif any(keyword in text for keyword in total_keywords):
-                area_total = text.split(":")[1].strip()
+                area_total = text.split(":")[1].strip().replace("m2", "").replace("m²", "").replace(" ", "")
 
 
         appraisal_value = None # O site não tem esse campo
@@ -671,13 +672,13 @@ def grupolance():
             infos = soup.find("div", class_="d-flex mt-4 mb-4").find_all("div", class_="mr-4 text-center")
 
             try:
-                area_total = infos[0].find("span", class_="d-block fs-px-16").text.split(" ")[0]
+                area_total = infos[0].find("span", class_="d-block fs-px-16").text.split(" ")[0].replace("m2", "").replace("m²", "").replace(" ", "")
 
             except Exception:
                 area_total = None
 
             try:
-                area_util = infos[1].find("span", class_="d-block fs-px-16").text.split(" ")[0]
+                area_util = infos[1].find("span", class_="d-block fs-px-16").text.split(" ")[0].replace("m2", "").replace("m²", "").replace(" ", "")
 
             except Exception:
                 area_util = None
@@ -687,7 +688,7 @@ def grupolance():
                 infos = soup.find("div", class_="d-flex mt-4 mb-4").find("div", class_="mr-4 text-center")
 
                 try:
-                    area_total = infos.find("span", class_="d-block fs-px-16").text.split(" ")[0]
+                    area_total = infos.find("span", class_="d-block fs-px-16").text.split(" ")[0].replace("m2", "").replace("m²", "").replace(" ", "")
 
                 except Exception:
                     area_total = None
@@ -1670,6 +1671,7 @@ def mazzollileiloes():
         areas = get_areas(descricao)
         area_util = areas[0]
         area_total = areas[1]
+
         appraisal_value = None
         try:
             appraisal_value = float(soup.find("div", style="flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-around; align-items: stretch;").find_all("div", style="flex-direction: column; box-sizing: border-box; display: flex;")[-1].find("b").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
@@ -2167,7 +2169,7 @@ def alfaleiloes():
             pass
         area_util = None
         try:
-            area_util = float(soup.find("div", title="Metragem").text.lstrip().rstrip().split()[0])
+            area_util = float(soup.find("div", title="Metragem").text.lstrip().rstrip().split()[0].replace("m2", "").replace("m²", "").replace(" ", ""))
         except Exception:
             pass
         area_total = None #sem campo no site
@@ -2858,9 +2860,9 @@ def portalzuk():
         for info in infos:
             info = info.text
             if "construída" in info:
-                area_util = info.split()[-1].split("construída")[1].lstrip().rstrip()
+                area_util = info.split()[-1].split("construída")[1].lstrip().rstrip().replace("m2", "").replace("m²", "").replace(" ", "")
             elif "terreno" in info:
-                area_total = info.split()[-1].split("terreno")[1].lstrip().rstrip()
+                area_total = info.split()[-1].split("terreno")[1].lstrip().rstrip().replace("m2", "").replace("m²", "").replace(" ", "")
 
         appraisal_value = None #site não tem campo
 
