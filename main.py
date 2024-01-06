@@ -63,7 +63,7 @@ def main():
             logging.info(f"Pull concluído em {agora.day}/{agora.month}/{agora.year} - {agora.hour}:{agora.minute}:{agora.second}")
             fazer_git_pull()
             excluir_arquivo_log("meu_log.log")
-        if agora.hour == 12 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4, 5]:
+        if agora.hour == 3 and agora.minute == 0 and 0 <= agora.second <= 59 and agora.weekday() in [0, 2, 4]:
             if platform.system() == "Windows":
                 os.system('cls')
             else:

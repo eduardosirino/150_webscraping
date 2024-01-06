@@ -76,7 +76,6 @@ ps aux | grep main.py
 61 - https://www.deonizialeiloes.com.br/externo/lotes/37947  
 62 - https://www3.bcb.gov.br/CALCIDADAO/publico/exibirFormCorrecaoValores.do?method=exibirFormCorrecaoValores  
 68 - https://www.gpleiloes.com.br//#/  
-72 - https://www.hdleiloes.com.br/externo/  
 73 - https://www.casaleiloeira.com.br/  
 74 - https://www.leiloescentrooeste.com.br/externo/  
 75 - https://www.alvaroleiloes.com.br/externo/  
@@ -179,5 +178,6 @@ ps aux | grep main.py
 109 - https://gestordeleiloes.com.br/home - PRONTO (sem leilão cadastrado agora, porém o site é igual a outros)
 25 - https://www.sold.com.br/ - PRONTO  
 10 - https://www.leiloes.com.br/ - PRONTO (pestana)  
+72 - https://www.hdleiloes.com.br/externo/  - PRONTO
 
 

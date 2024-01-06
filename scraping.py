@@ -6382,6 +6382,64 @@ def hdleiloes():
         data.append(data_unit)
     return data
 
+def leiloesbrasil():
+    cards = []
+    x = 1
+    while True:
+        soup = get_selenium_no_headless(f"https://www.leiloesbrasil.com.br/imoveis#pagina={x}")
+        cards_page = soup.find("tbody", class_="bg-white js_body").find_all("tr")
+
+        new_cards = [card for card in cards_page if card not in cards]
+        
+        if not new_cards:
+            break
+
+        cards.extend(new_cards)
+        x += 1
+
+    data = []
+    for card in cards:
+        link = f"https://www.leiloesbrasil.com.br/imoveis/lote/{card.get("data-rowid")}"
+        img_cover = card.find("img").get("src")
+        name = card.find("div", class_="container-veja-mais descricao-lote").find("h5").text
+        address = card.find("div", class_="endereco pb-2").text
+        
+        appraisal_value = None
+        values = []
+        infos = card.find("div", class_="valores").find_all("strong")
+        for info in infos:
+            info = info.text
+            if "VALOR MÍNIMO" in info:
+                try:
+                    values.append(float(info.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.')))
+                except Exception:
+                    values.append(float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
+        
+            elif "VALOR AVALIAÇÃO" in info:
+                    appraisal_value = float(info.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+                
+        if values:
+            value = min(values)
+        else:
+            value = None
+            
+        descricao = card.find("div", class_="desc conteudo-html").find("p").text
+
+        area_util = None
+        area_total = None
+        data_unit = {"Site": "LeiloesBrasil",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+    return data
+
 if __name__ == "__main__":
     #controle para testes
     if platform.system() == "Windows":
@@ -6394,7 +6452,7 @@ if __name__ == "__main__":
     #francoleiloes()
     #leilaosantos()
     #leiloeirobonatto()
-    #lessaleiloes() - não tem leilao e nem categoria
+    #lessaleiloes() - não tem leilao e nem categoria (não incluido)
     #rymerleiloes()
     #grupolance()
     #megaleiloes()
@@ -6476,4 +6534,5 @@ if __name__ == "__main__":
     #gestordeleiloes()
     #sold()
     #pestanaleiloes()
-    #hdleiloes()
+    #hdleiloes() - ultimo incluido
+    leiloesbrasil()
