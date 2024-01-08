@@ -52,10 +52,9 @@ def update_db(data_list):
                 valores = (data['Site'], data['Nome'], data['Endereço'], data['Área Útil'], data['Área Total'], 
                            data['Valor'], data['Valor da Avaliação'], data['Link oferta'], data['Link imagem da capa'])
                 cursor.execute(query_insert, valores)
-                print("valor inserido")
             # Confirma as mudanças
             connection.commit()
-            print("VALORES CONFIRMADOS")
+            print(f"{len(data)} valores inseridos no banco")
 
         cursor.close()
         connection.close()

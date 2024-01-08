@@ -73,4 +73,5 @@ def main():
         time.sleep(60)  # Espera 1 minuto antes de verificar novamente
 
 if __name__ == "__main__":
+    print("Iniciando o webscraping...")
     main()
