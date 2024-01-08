@@ -6520,7 +6520,7 @@ def leiloesbrasil():
 
     data = []
     for card in cards:
-        link = f"https://www.leiloesbrasil.com.br/imoveis/lote/{card.get("data-rowid")}"
+        link = f"https://www.leiloesbrasil.com.br/imoveis/lote/{card.get('data-rowid')}"
         img_cover = card.find("img").get("src")
         name = card.find("div", class_="container-veja-mais descricao-lote").find("h5").text
         try:
