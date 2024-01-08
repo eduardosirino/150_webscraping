@@ -50,7 +50,7 @@ ps aux | grep main.py
 
 #### Estão com problemas e vou tentar de outras formas
   
-16 - https://www.lessaleiloes.com.br/ - não pronto, deu erro (vou tentar com undetected ou selenium base depois)  
+16 - https://www.lessaleiloes.com.br/ - não tem leilão cadastrado para criar o código  
 83 - https://www.norteleiloes.com.br/ - 403 com requests e erro com selenium  
 71 - https://www.wrleiloes.com.br/ - não tem leilão cadastrado para criar o código  
 37 - https://satoleiloes.com.br - problema grande - sem link para acesso a página do leilão  
@@ -82,7 +82,6 @@ ps aux | grep main.py
 78 - https://banco.bradesco/html/classic/produtos-servicos/leiloes/index.shtm  
 80 - https://www.leilaovip.com.br/home  
 81 - https://www.palaciodosleiloes.com.br/  
-82 - https://www.leiloesbrasil.com.br/presite  
 87 - https://www.vipleiloes.com.br/  
 97 - https://www.bspleiloes.com.br/Principal.asp  
 102 - https://www.leiloesjudiciaisrs.com.br/externo/  
@@ -179,5 +178,6 @@ ps aux | grep main.py
 25 - https://www.sold.com.br/ - PRONTO  
 10 - https://www.leiloes.com.br/ - PRONTO (pestana)  
 72 - https://www.hdleiloes.com.br/externo/  - PRONTO
+82 - https://www.leiloesbrasil.com.br/presite - PRONTO  
 
 

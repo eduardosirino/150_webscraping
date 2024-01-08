@@ -11,7 +11,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from pyvirtualdisplay import Display
-from auxiliar import get_requests, get_selenium, get_selenium_more_visited, get_areas, get_selenium_no_headless
+from auxiliar import get_requests, ScraperHeadless, get_selenium_more_visited, get_areas, ScraperNoHeadless
 
 def mullerleiloes():
     urls = ["https://www.mullerleiloes.com.br/lotes/imovel"]
@@ -540,9 +540,10 @@ def leiloeirobonatto():
     return data
 
 def lessaleiloes():
-    soup = get_selenium("https://www.lessaleiloes.com.br/?searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&orderBy=endDate:asc")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.lessaleiloes.com.br/?searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=30&orderBy=endDate:asc")
     cards = soup.find_all("div", class_="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-12 css-1ojex0")
-    
+    print(cards)
     for card in cards:
         link = card.find("div", class_="react-swipeable-view-container").find("div", style="overflow: hidden;").find("a").get("href")
         link = f"https://www.lessaleiloes.com.br{link}"
@@ -552,7 +553,7 @@ def lessaleiloes():
             if hidden == "false":
                 img_cover = info.find("div", style="overflow: hidden;").find("a").find("img").get("src")  # noqa: F841
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         name = soup.find("h1", class_="MuiTypography-root MuiTypography-h1 jss268 jss184 css-1yomz3x").text  # noqa: F841
 
@@ -567,6 +568,7 @@ def lessaleiloes():
                 appraisal_value = float(text.split("$").split("(").lstrip().rstrip().replace('.', '').replace(',', '.'))
             elif "segundo leilão" in text:
                 value2 = float(text.split("$").split("(").lstrip().rstrip().replace('.', '').replace(',', '.'))
+        scraper.close()
         break
 
 def rymerleiloes():
@@ -574,6 +576,7 @@ def rymerleiloes():
     cards = soup.find("div", class_="cont-leiloes").find_all("article")
 
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find("a").find("img").get("src")
         link = f"https://www.rymerleiloes.com.br{card.find('a').get('href')}"
@@ -609,9 +612,9 @@ def rymerleiloes():
 
         soup1 = None
         try:
-            soup1 = get_selenium(soup.find("a", class_="btn btn-sm btn-light btn-detalhes").get("href"))
+            soup1 = scraper.get_selenium(soup.find("a", class_="btn btn-sm btn-light btn-detalhes").get("href"))
         except Exception:
-            soup1 = get_selenium(f"https://www.rymerleiloes.com.br{soup.find('a', class_='btn btn-sm btn-light btn-detalhes').get('href')}")
+            soup1 = scraper.get_selenium(f"https://www.rymerleiloes.com.br{soup.find('a', class_='btn btn-sm btn-light btn-detalhes').get('href')}")
 
         appraisal_value = float(soup1.find("div", "avaliacao").text.split("$")[1].lstrip().rsplit()[0].replace('.', '').replace(',', '.'))
 
@@ -631,6 +634,7 @@ def rymerleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def grupolance():
@@ -807,8 +811,9 @@ def vivaleiloes():
     urls = ["https://www.vivaleiloes.com.br/busca/#Engine=Start&Pagina=1&Busca=&Mapa=&ID_Categoria=55&PaginaIndex=1&QtdPorPagina=99999"]
 
     cards = []
+    scraper = ScraperHeadless()
     for url in urls:
-        soup = get_selenium(url)
+        soup = scraper.get_selenium(url)
         cards_page = soup.find_all("div", class_="col-xs-12 col-sm-6 col-md-4 col-lg-3 dg-leiloes-item-col")
         cards.extend(cards_page)
     
@@ -877,16 +882,18 @@ def vivaleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def biasileiloes():
-    soup = get_selenium("https://www.biasileiloes.com.br/lotes/todas-categorias/pesquisa?pagina=1")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.biasileiloes.com.br/lotes/todas-categorias/pesquisa?pagina=1")
     quant_pages = soup.find("span", class_="text-paging").find("span", "total-page").text
     
     cards = []
     for x in range(int(quant_pages)):
         link = f"https://www.biasileiloes.com.br/lotes/todas-categorias/pesquisa?pagina={x+1}"
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
         cards_page = soup.find_all("div", class_="col-xs-12 col-sm-6 col-md-4 col-lg-3")
         for card_page in cards_page:
             cards.append(card_page)
@@ -907,7 +914,7 @@ def biasileiloes():
         except Exception:
             value = float(values.find("span", class_="price-line").text.split("$")[1].replace("\n", "").replace('.', '').replace(',', '.'))
         
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
         address = soup.find("span", class_="lot-subtitle").text.lstrip().rstrip()
 
         descricao = soup.find("div", class_="col-lg-12").find("div", class_="panel panel-default").get_text(strip=True)
@@ -930,6 +937,7 @@ def biasileiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def sanchesleiloes():
@@ -1538,7 +1546,8 @@ def veronicaleiloes():
     return data
 
 def delltaleiloes():
-    soup = get_selenium("https://www.delttaleiloes.com.br/home")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.delttaleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
     for card in cards:
@@ -1548,7 +1557,7 @@ def delltaleiloes():
         name = card.find("div").find("h4").text
         if "automovel" in name.lower() or "automóvel" in name.lower() or "moto" in name.lower() or "carro" in name.lower() or "caminhonete" in name.lower() or "molduras" in name.lower():
             continue
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         values = soup.find_all("div", style="margin-top: 15px; flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-between; align-items: stretch;")
@@ -1581,10 +1590,12 @@ def delltaleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
         
 def krobelleiloes():
-    soup = get_selenium("https://www.krobelleiloes.com.br/home")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.krobelleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
     for card in cards:
@@ -1594,7 +1605,7 @@ def krobelleiloes():
         name = card.find("div").find("h4").text
         if "fiesta" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower():
             continue
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         values = soup.find_all("div", style="margin-top: 15px; flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-between; align-items: stretch;")
@@ -1636,10 +1647,12 @@ def krobelleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def mazzollileiloes():
-    soup = get_selenium("https://mazzollileiloes.com.br/home")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://mazzollileiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
     for card in cards:
@@ -1649,7 +1662,7 @@ def mazzollileiloes():
         name = card.find("div").find("h4").text
         if "bmw" in name.lower() or "semirreboque" in name.lower() or "huwo" in name.lower() or "carregadeira" in name.lower() or "librelato" in name.lower() or "renault" in name.lower() or "caminhão" in name.lower() or "vw" in name.lower() or "gm" in name.lower() or "maquina" in name.lower() or "maquinas" in name.lower() or "multifuncional" in name.lower() or "cherry" in name.lower() or "estoquinete" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "fiesta" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "yamaha" in name.lower() or "peugeot" in name.lower() or "toyota" in name.lower() or "hyundai" in name.lower() or "equipamento" in name.lower() or "renault" in name.lower() or "cadeira" in name.lower() or "cadeiras""audi" in name.lower():
             continue
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         values = soup.find_all("div", style="margin-top: 15px; flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-between; align-items: stretch;")
@@ -1692,10 +1705,12 @@ def mazzollileiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def oesteleiloes():
-    soup = get_selenium("https://www.oesteleiloes.com.br/home")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.oesteleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
     for card in cards:
@@ -1705,7 +1720,7 @@ def oesteleiloes():
         name = card.find("div").find("h4").text
         if "chevrolet" in name.lower() or "citroen" in name.lower() or "fiat" in name.lower() or "hyundai" in name.lower() or "gm" in name.lower() or "nissan" in name.lower() or "chevrolet" in name.lower() or "yamaha" in name.lower() or "honda" in name.lower() or "ford" in name.lower():
             continue
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         values = soup.find_all("div", style="margin-top: 15px; flex-direction: row; box-sizing: border-box; display: flex; place-content: stretch space-between; align-items: stretch;")
@@ -1748,10 +1763,12 @@ def oesteleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def nordesteleiloes():
-    soup = get_selenium("https://www.nordesteleiloes.com.br/?searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=9999999&orderBy=endDate:asc")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.nordesteleiloes.com.br/?searchType=opened&preOrderBy=orderByFirstOpenedOffers&pageNumber=1&pageSize=9999999&orderBy=endDate:asc")
     cards = soup.find_all("div", class_="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-12 css-1ojex0")
 
     data = []
@@ -1765,7 +1782,7 @@ def nordesteleiloes():
         value = float(card.find("p", class_="MuiTypography-root MuiTypography-body1 jss363 css-z355qp").text.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         address = card.find("p", class_="MuiTypography-root MuiTypography-body1 jss370 css-z355qp").text.lstrip().rstrip()
         
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         descricao = soup.find("div", class_="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-12 MuiGrid-grid-lg-12 css-1ojex0").text
 
@@ -1792,6 +1809,7 @@ def nordesteleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def portellaleiloes():
@@ -2113,9 +2131,10 @@ def trileiloes():
 def alfaleiloes():
     cards = []
     x=1
+    scraper = ScraperHeadless()
     while True:
         try:
-            soup = get_selenium(f"https://www.alfaleiloes.com/leiloes/?&page={x}&categoria=18&categoria=19&categoria=24&categoria=30&categoria=35&categoria=20&categoria=21&categoria=22&categoria=32&categoria=34&categoria=23&categoria=26&categoria=27")
+            soup = scraper.get_selenium(f"https://www.alfaleiloes.com/leiloes/?&page={x}&categoria=18&categoria=19&categoria=24&categoria=30&categoria=35&categoria=20&categoria=21&categoria=22&categoria=32&categoria=34&categoria=23&categoria=26&categoria=27")
             cards_page = soup.find_all("div", class_="home-leiloes-cards")
             verify = cards_page[0].find("div", class_="card-content").text.lstrip().rstrip()  # noqa: F841
             verify = cards_page[0].find("div", class_="card-status").find("p").text
@@ -2147,7 +2166,7 @@ def alfaleiloes():
             value = min(values)
         except Exception:
             pass
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
         
         address = None
         appraisal_value = None
@@ -2184,7 +2203,8 @@ def alfaleiloes():
                     "Link oferta": link,
                     "Link imagem da capa": img_cover
                     }
-        data.append(data_unit)       
+        data.append(data_unit)
+    scraper.close()       
     return data
 
 def wspleiloes():
@@ -2291,6 +2311,7 @@ def damianileiloes():
     soup = get_selenium_more_visited("https://www.damianileiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
         id_leilao = img_cover.split("/")
@@ -2299,7 +2320,7 @@ def damianileiloes():
         if "empacotadora" in name.lower() or "forno" in name.lower() or "roseteira" in name.lower() or "pneumática" in name.lower() or "fornos" in name.lower() or "produção" in name.lower():
             continue
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         value = None
@@ -2348,6 +2369,7 @@ def damianileiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def joaoemilio():
@@ -2580,6 +2602,7 @@ def topleiloes():
     soup = get_selenium_more_visited("https://www.topleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
         id_leilao = img_cover.split("/")
@@ -2588,7 +2611,7 @@ def topleiloes():
         if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
             continue
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         value = None
@@ -2637,6 +2660,7 @@ def topleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def valerioiaminleiloes():
@@ -2843,12 +2867,13 @@ def portalzuk():
     cards = soup.find("div", class_="list-items").find_all("div", class_="card-property card_lotes_div")
 
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         link = card.find("div", class_="card-property-image-wrapper").find("a").get("href")
         img_cover = card.find("div", class_="card-property-image-wrapper").find("a").find("img").get("src")
         value = float(card.find("span", class_="card-property-price-value").text.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
         name = soup.find("div", class_="content").find("h1", class_="title").text.lstrip().rstrip()
         address = soup.find("div", class_="content").find("p", class_="property-address").text.replace("\n", " ").lstrip().rstrip()
         while "  " in address:
@@ -2877,6 +2902,7 @@ def portalzuk():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def superbid():
@@ -2938,12 +2964,13 @@ def superbid():
     driver.quit()
 
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         try:
             link = f"https://www.superbid.net{card.find('div', class_='react-swipeable-view-container').find('a').get('href')}"
             img_cover = card.find("div", class_="react-swipeable-view-container").find("a").find("img").get("src")
             
-            soup = get_selenium(link)
+            soup = scraper.get_selenium(link)
 
             name = None
             try:
@@ -3010,6 +3037,7 @@ def superbid():
             data.append(data_unit)
         except Exception:
             continue
+    scraper.close()
     return data
 
 def tonialleiloes():
@@ -3193,9 +3221,11 @@ def pimentelleiloes():
     return data
 
 def leilaobrasil():
-    soup = get_selenium("https://www.leilaobrasil.com.br/")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.leilaobrasil.com.br/")
+    scraper.close()
     cards = soup.find_all("div", class_="col-sm-6 col-md-4 col-lg-3 mb-4 leilao-home")
-
+    
     data = []
     for card in cards:
         link = f"https://www.leilaobrasil.com.br/{card.find('a').get('href')}"
@@ -4052,9 +4082,11 @@ def nasarleiloes():
     return data
 
 def pecinileiloes():
-    soup = get_selenium("https://www.pecinileiloes.com.br/busca/#Engine=Start&Pagina=1&RangeValores=0&OrientacaoBusca=0&Busca=&Mapa=&ID_Categoria=0&ID_Estado=-1&ID_Cidade=-1&Bairro=-1&ID_Regiao=0&ValorMinSelecionado=0&ValorMaxSelecionado=0&Ordem=0&QtdPorPagina=9999999&ID_Leiloes_Status=1&SubStatus=&PaginaIndex=3&BuscaProcesso=&NomesPartes=&CodLeilao=&TiposLeiloes=[]&CFGs=[]")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.pecinileiloes.com.br/busca/#Engine=Start&Pagina=1&RangeValores=0&OrientacaoBusca=0&Busca=&Mapa=&ID_Categoria=0&ID_Estado=-1&ID_Cidade=-1&Bairro=-1&ID_Regiao=0&ValorMinSelecionado=0&ValorMaxSelecionado=0&Ordem=0&QtdPorPagina=9999999&ID_Leiloes_Status=1&SubStatus=&PaginaIndex=3&BuscaProcesso=&NomesPartes=&CodLeilao=&TiposLeiloes=[]&CFGs=[]")
+    scraper.close()
+
     cards = soup.find_all("div", class_="col-xs-12 col-sm-6 col-md-4 col-lg-3 dg-leiloes-item-col")
-    
     data = []
     for card in cards:
         link = card.find("div", class_="dg-leiloes-lista-img").find("a", class_="dg-leiloes-img").get("href")
@@ -4487,6 +4519,7 @@ def maxxleiloes():
     soup = get_selenium_more_visited("https://www.maxxleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
         id_leilao = img_cover.split("/")
@@ -4495,7 +4528,7 @@ def maxxleiloes():
         if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
             continue
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         value = None
@@ -4544,6 +4577,7 @@ def maxxleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 
@@ -4665,12 +4699,13 @@ def jeleiloes():
 def d1lance():
     cards = []
     urls = ["https://www.d1lance.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=61&PaginaIndex=1&QtdPorPagina=9999", "https://www.d1lance.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=62&PaginaIndex=1&QtdPorPagina=9999", "https://www.d1lance.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=58&PaginaIndex=1&QtdPorPagina=9999", "https://www.d1lance.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=55&PaginaIndex=5&QtdPorPagina=9999"]
-
+    scraper = ScraperHeadless()
     for url in urls:
-        soup = get_selenium(url)
+        soup = scraper.get_selenium(url)
         cards_page = soup.find_all('div', class_="col-xs-12 col-sm-6 col-md-4 col-lg-3 dg-leiloes-item-col")
         cards.extend(cards_page)
-
+    scraper.close()
+    
     data = []
     for card in cards:
         link = card.find("a", class_="dg-leiloes-img").get("href")
@@ -4811,9 +4846,10 @@ def hastavip():
 def frazaoleiloes():
     cards = []
     x = 1
+    scraper = ScraperHeadless()
     while True:
         try:
-            soup = get_selenium(f"https://www.frazaoleiloes.com.br/sale/searchLot?pagina={x}")
+            soup = scraper.get_selenium(f"https://www.frazaoleiloes.com.br/sale/searchLot?pagina={x}")
             cards_page = soup.find("div", id="leilao-lista-lote").find_all("div", class_="col-xs-12 col-sm-6 col-md-4 col-lg-3 lote-element")
             verify = cards_page[0].find("div", class_="lote-information").text.lstrip().rstrip()  # noqa: F841
             cards.extend(cards_page)
@@ -4837,7 +4873,7 @@ def frazaoleiloes():
         if values:
             value = min(values)
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         address = soup.find("div", class_="row mt-2").find("div", class_="card-header").find("span").text.lstrip().rstrip()
 
@@ -4858,6 +4894,7 @@ def frazaoleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+        scraper.close()
     return data
 
 def peterlongoleiloes():
@@ -5047,12 +5084,14 @@ def rauppleiloes():
 def pwleiloes():
     urls = ["https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=55&PaginaIndex=1&QtdPorPagina=99999", "https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=61&PaginaIndex=1&QtdPorPagina=99999", "https://www.pwleiloes.com.br/busca/#Engine=Start&Scopo=1&Pagina=1&Busca=&Mapa=&ID_Categoria=58&PaginaIndex=1&QtdPorPagina=99999"]
     cards = []
+    scraper = ScraperHeadless()
 
     for url in urls:
-        soup = get_selenium(url)
+        soup = scraper.get_selenium(url)
         cards_page = soup.find_all("div", class_="col-xs-12 col-sm-6 col-md-4 col-lg-3 dg-leiloes-item-col")
         cards.extend(cards_page)
-    
+    scraper.close()
+
     data = []
     for card in cards:
         link = card.find("a", class_="dg-leiloes-img").get("href")
@@ -5340,7 +5379,8 @@ def rjleiloes():
 
 def fabiobarbosaleiloes():
     cards = []
-    soup = get_selenium("https://www.fabiobarbosaleiloes.com.br/externo/")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.fabiobarbosaleiloes.com.br/externo/")
     urls_cards = soup.find_all("a", class_="l-lnk-carta")
     for url in urls_cards:
         situacao = url.find("div", class_="c-status-leilao").get_text()
@@ -5348,7 +5388,7 @@ def fabiobarbosaleiloes():
             name_leilao = url.get("title")
             if "simulação" not in name_leilao.lower():
                 url = f"https://www.fabiobarbosaleiloes.com.br{url.get('href')}"
-                soup = get_selenium(url)
+                soup = scraper.get_selenium(url)
                 cards_divs = soup.find("div", class_="l-leilao").find_all("div", class_="c-linha")
                 for card in cards_divs:
                     situacao_lote = card.find("button", class_="c-dados-bem-status").text
@@ -5362,7 +5402,7 @@ def fabiobarbosaleiloes():
         name = f"{card.find('p', class_='c-descricao-lote').text.lstrip().rstrip()[:50]}..." #site não tem nome, então usei os 50 primeiros caracteres da descrição
         if "automovel" in name.lower() or "automóvel" in name.lower() or "carro" in name.lower() or "moto" in name.lower() or "vw" in name.lower() or "fiat" in name.lower() or "chevrolet" in name.lower() or "volksvagem" in name.lower():
             continue
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         infos = soup.find("table", class_="c-detalhes-bem-valores").find("tbody").find_all("tr")
         appraisal_value = float(infos[1].text.split("$")[1].split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
@@ -5386,6 +5426,7 @@ def fabiobarbosaleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def hammer():
@@ -5833,6 +5874,7 @@ def baldisseraleiloeiros():
     soup = get_selenium_more_visited("https://www.baldisseraleiloeiros.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
         if "/assets/images/" in img_cover:
@@ -5843,7 +5885,7 @@ def baldisseraleiloeiros():
         if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
             continue
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         value = None
@@ -5900,10 +5942,12 @@ def baldisseraleiloeiros():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def nakakogueleiloes():
-    soup = get_selenium("https://www.nakakogueleiloes.com.br/lotes/consulta/1/")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.nakakogueleiloes.com.br/lotes/consulta/1/")
     cards = soup.find("ul", id="itemContainer").find_all("li", style="display: table; opacity: 1;")
     cards_1 = soup.find("ul", id="itemContainer").find_all("li", style="display: none;")
     cards.extend(cards_1)
@@ -5927,7 +5971,7 @@ def nakakogueleiloes():
                 appraisal_value = float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         link = f"https://www.nakakogueleiloes.com.br/{card.find('section', class_='direita').find('a', class_='botao').get('href')}"
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
         img_cover = f"https://www.nakakogueleiloes.com.br/{soup.find('img', class_='fotorama__img').get('src')}"
         descricao = soup.find("div", id="obsprod").find("li").text
         areas = get_areas(descricao)
@@ -5948,10 +5992,12 @@ def nakakogueleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def psnleiloes():
-    soup = get_selenium("https://www.psnleiloes.com.br/lotes/consulta/1/")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.psnleiloes.com.br/lotes/consulta/1/")
     cards = soup.find("ul", id="itemContainer").find_all("li", style="display: table; opacity: 1;")
     cards_1 = soup.find("ul", id="itemContainer").find_all("li", style="display: none;")
     cards.extend(cards_1)
@@ -5975,7 +6021,7 @@ def psnleiloes():
             elif "Valor Avaliado:" in info:
                 appraisal_value = float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.'))
         
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         img_cover = f"https://www.psnleiloes.com.br/{soup.find('img', class_='fotorama__img').get('src')}"
         descricao = soup.find("div", id="obsprod").find("li").text
@@ -5997,12 +6043,14 @@ def psnleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def maxterleiloes():
     soup = get_selenium_more_visited("https://www.maxterleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
         if "/assets/images/" in img_cover:
@@ -6013,7 +6061,7 @@ def maxterleiloes():
         if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
             continue
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         value = None
@@ -6070,12 +6118,14 @@ def maxterleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def gestordeleiloes():
     soup = get_selenium_more_visited("https://gestordeleiloes.com.br/home")
     cards = soup.find("div", class_="gtClassLote ng-star-inserted").find_all("div", class_="ng-star-inserted")
     data = []
+    scraper = ScraperHeadless()
     for card in cards:
         img_cover = card.find_all("div")[1].find("img", class_="mat-card-image ng-star-inserted").get("src")
         if "/assets/images/" in img_cover:
@@ -6086,7 +6136,7 @@ def gestordeleiloes():
         if "reboque" in name.lower() or "bens" in name.lower() or "veiculo" in name.lower() or "veículo" in name.lower() or "honda" in name.lower() or "fiat" in name.lower() or "renault" in name.lower() or "kia" in name.lower():
             continue
 
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         values_list = []
         value = None
@@ -6143,10 +6193,12 @@ def gestordeleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def sold():
-    soup = get_selenium("https://www.sold.com.br/categorias/imoveis?searchType=opened&pageNumber=1&pageSize=99999&orderBy=price:desc")
+    scraper = ScraperHeadless()
+    soup = scraper.get_selenium("https://www.sold.com.br/categorias/imoveis?searchType=opened&pageNumber=1&pageSize=99999&orderBy=price:desc")
     cards = soup.find("div", class_="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1 css-tuxzvu").find_all("div", class_="MuiGrid-root MuiGrid-container MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-5 MuiGrid-grid-md-3.1 css-1kam6io")
 
     data = []
@@ -6154,7 +6206,7 @@ def sold():
         link = f"https://www.sold.com.br{card.find('div', class_='react-swipeable-view-container').find('a').get('href')}"
         img_cover = card.find("div", class_="react-swipeable-view-container").find("a").find("img").get("src")
         
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
 
         name = None
         try:
@@ -6219,13 +6271,15 @@ def sold():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def pestanaleiloes():
     cards = []
     x = 1
+    scraper = ScraperHeadless()
     while True:
-        soup = get_selenium(f"https://www.pestanaleiloes.com.br/procurar-bens?lotePage={x}&loteQty=96&tipoBem=462")
+        soup = scraper.get_selenium(f"https://www.pestanaleiloes.com.br/procurar-bens?lotePage={x}&loteQty=96&tipoBem=462")
         cards_page = soup.select(".sc-kpDqfm.hljMjg > div")
 
         new_cards = [card for card in cards_page if card not in cards]
@@ -6250,7 +6304,7 @@ def pestanaleiloes():
 
         name = card.find("h3", style="overflow: hidden; margin: 0px 0px 10px; line-height: 1.1em; min-height: 3.3em; max-height: 3.3em; color: rgba(0, 0, 0, 0.87); font-size: 18px; font-weight: 500;").text.lstrip().rstrip()
         link = f"https://www.pestanaleiloes.com.br{card.find('a').get('href')}"
-        soup = get_selenium(link)
+        soup = scraper.get_selenium(link)
         infos = soup.find_all("div", class_="mdl-cell mdl-cell--6-col mdl-cell--12-col-phone d-inline-block carateristica-item print-col-50-no-margin")
         try:
             img_cover = soup.find("img", class_="print-image imgWithZoomIn").get("src")
@@ -6318,11 +6372,13 @@ def pestanaleiloes():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
 
 def hdleiloes():
     cards = []
-    soup = get_selenium_no_headless("https://www.hdleiloes.com.br/externo/")
+    scraper = ScraperNoHeadless()
+    soup = scraper.get_selenium_no_headless("https://www.hdleiloes.com.br/externo/")
     leiloes = soup.find("div", id="c-conteudo").find_all("a", class_="l-lnk-carta")
     
     for leilao in leiloes:
@@ -6332,12 +6388,13 @@ def hdleiloes():
         if "ABERTO PARA LANCES" in situacao and "simulação" not in name_leilao.lower() and "situacao" not in name_leilao.lower():
             link_leilao = f"https://www.hdleiloes.com.br{leilao.get('href')}"
             
-            soup = get_selenium_no_headless(link_leilao)
+            soup = scraper.get_selenium_no_headless(link_leilao)
             cards_page = soup.find("div", class_="c-bens").find_all("div", class_="c-bem azul")
             for card in cards_page:
                 situacao = card.find("span", class_="c-bem-status").text
                 if situacao == "ABERTO":
                     cards.extend(card)
+    scraper.close()
 
     data = []
     for card in cards:
@@ -6382,11 +6439,75 @@ def hdleiloes():
         data.append(data_unit)
     return data
 
+def norteleiloes():
+    cards = []
+    x = 1
+    scraper = ScraperNoHeadless()
+    while True:
+        soup = scraper.get_selenium_no_headless(f"https://www.norteleiloes.com.br/imoveis#pagina={x}")
+        cards_page = soup.find("div", id="lotes-content").find_all("div", class_="col-6 col-md-4 col-lg-3 text-center js_leiloes-col js_lote")
+
+        new_cards = [card for card in cards_page if card not in cards]
+        
+        if not new_cards:
+            break
+
+        cards.extend(new_cards)
+        x += 1
+
+    data = []
+    for card in cards:
+        link = card.find("div", id="box-status").find("a").get("href")
+        img_cover = card.find("div", id="box-content").find("img").get("src")
+        
+        soup = scraper.get_selenium_no_headless(link)
+        name = card.find("div", class_="card-title row").find("div").text.lstrip().rstrip()
+        descricao = card.find("div", id="box-content").find("div", class_="text-justify pt-1 rounded desc conteudo-html").text
+
+        values = []
+        address = None
+        appraisal_value = None
+        infos = soup.find("table", id="tb-dados-lote-online").find("tbody").find_all("tr")
+        for info in infos:
+            info = info.text
+            if "Valor Avaliação:" in info:
+                x = info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')
+                if "-" not in x or "*" not in x:
+                    appraisal_value = float(x)
+            elif "Valor Mínimo:" in info:
+                values.append(float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
+            elif "Endereço:" in info:
+                address = info.split("Endereço:")[1].lstrip().rstrip()
+
+        if values:
+            value = min(values)
+        else:
+            value = None
+        
+        areas = get_areas(descricao)
+        area_util = areas[0]
+        area_total = areas[1]
+                
+        data_unit = {"Site": "NorteLeiloes",
+                    "Nome": name,
+                    "Endereço": address,
+                    "Área Útil": area_util,
+                    "Área Total": area_total,
+                    "Valor": value,
+                    "Valor da Avaliação": appraisal_value,
+                    "Link oferta": link,
+                    "Link imagem da capa": img_cover
+                    }
+        data.append(data_unit)
+    scraper.close()
+    return data
+
 def leiloesbrasil():
     cards = []
     x = 1
+    scraper = ScraperNoHeadless()
     while True:
-        soup = get_selenium_no_headless(f"https://www.leiloesbrasil.com.br/imoveis#pagina={x}")
+        soup = scraper.get_selenium_no_headless(f"https://www.leiloesbrasil.com.br/imoveis#pagina={x}")
         cards_page = soup.find("tbody", class_="bg-white js_body").find_all("tr")
 
         new_cards = [card for card in cards_page if card not in cards]
@@ -6402,31 +6523,67 @@ def leiloesbrasil():
         link = f"https://www.leiloesbrasil.com.br/imoveis/lote/{card.get("data-rowid")}"
         img_cover = card.find("img").get("src")
         name = card.find("div", class_="container-veja-mais descricao-lote").find("h5").text
-        address = card.find("div", class_="endereco pb-2").text
-        
+        try:
+            address = card.find("div", class_="container-veja-mais descricao-lote").find("div", class_="endereco pb-2").text
+        except Exception:
+            pass
         appraisal_value = None
         values = []
-        infos = card.find("div", class_="valores").find_all("strong")
-        for info in infos:
-            info = info.text
-            if "VALOR MÍNIMO" in info:
-                try:
-                    values.append(float(info.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.')))
-                except Exception:
-                    values.append(float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
-        
-            elif "VALOR AVALIAÇÃO" in info:
-                    appraisal_value = float(info.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
-                
+        try:
+            infos = card.find("div", class_="container-veja-mais descricao-lote").find("div", class_="valores").find_all("strong")
+            for info in infos:
+                info = info.text
+                if "VALOR MÍNIMO" in info:
+                    try:
+                        values.append(float(info.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.')))
+                    except Exception:
+                        values.append(float(info.split("$")[1].lstrip().rstrip().replace('.', '').replace(',', '.')))
+            
+                elif "VALOR AVALIAÇÃO" in info:
+                        appraisal_value = float(info.split("$")[1].lstrip().rstrip().split()[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+        except Exception:
+            pass
         if values:
             value = min(values)
         else:
             value = None
-            
-        descricao = card.find("div", class_="desc conteudo-html").find("p").text
 
-        area_util = None
-        area_total = None
+        areas_util = []
+        areas_total = []
+        descricao = card.find("div", class_="container-veja-mais descricao-lote").find("div", class_="desc conteudo-html").text
+        areas = get_areas(descricao)
+        areas_util.append(areas[0])
+        areas_total.append(areas[1])
+
+        try:
+            soup = scraper.get_selenium_no_headless(link)
+            infos = soup.find("div", id="lot-imovel-icons").find_all("h4")
+            for info in infos:
+                info = info.text
+                if "Área Total" in info:
+                    x = float(info.split("\n")[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+                    if x != 0:
+                        areas_total.append(x)
+                elif "Área Privativa" in info:
+                    x = float(info.split("\n")[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+                    if x != 0:
+                        areas_util.append(x)
+                elif "Área Terreno" in info:
+                    x = float(info.split("\n")[0].lstrip().rstrip().replace('.', '').replace(',', '.'))
+                    if x != 0:
+                        areas_total.append(x)
+        except Exception:
+            pass
+        
+        if areas_util:
+            area_util = max(areas_util)
+        else:
+            area_util = None
+        if areas_total:
+            area_total = max(areas_total)
+        else:
+            area_total = None
+
         data_unit = {"Site": "LeiloesBrasil",
                     "Nome": name,
                     "Endereço": address,
@@ -6438,7 +6595,11 @@ def leiloesbrasil():
                     "Link imagem da capa": img_cover
                     }
         data.append(data_unit)
+    scraper.close()
     return data
+
+
+
 
 if __name__ == "__main__":
     #controle para testes
@@ -6452,7 +6613,7 @@ if __name__ == "__main__":
     #francoleiloes()
     #leilaosantos()
     #leiloeirobonatto()
-    #lessaleiloes() - não tem leilao e nem categoria (não incluido)
+    #lessaleiloes() #- não tem leilao e nem categoria (não incluido)
     #rymerleiloes()
     #grupolance()
     #megaleiloes()
@@ -6535,4 +6696,5 @@ if __name__ == "__main__":
     #sold()
     #pestanaleiloes()
     #hdleiloes() - ultimo incluido
-    leiloesbrasil()
+    #leiloesbrasil()
+    norteleiloes()
