@@ -62,7 +62,7 @@ def update_db(data_list):
         print("Não foi possível conectar ao banco de dados")
 
 
-def get_selenium(url):
+def get_selenium_more_visited(url):
     # Configurar o driver do Selenium
     chrome_options = Options()
     chrome_options.add_argument('--no-sandbox')
@@ -86,7 +86,7 @@ def get_selenium(url):
         try:
             WebDriverWait(driver, 10).until(
                 lambda driver: driver.execute_script("return document.body.scrollHeight") > last_height
-            )
+                )
         except TimeoutException:
             break  # Se o tempo de espera exceder, sair do loop
 
@@ -96,14 +96,24 @@ def get_selenium(url):
             break
         last_height = new_height
 
+
+    button = driver.find_element('xpath', '/html/body/app-root/div/main/div/app-home/mat-card/div[5]/app-filtro/div[1]/div[2]/button[1]')
+    driver.execute_script("arguments[0].click();", button)
+    time.sleep(3)
+
+    for i in range(0, 50000, 500):
+        driver.execute_script(f"window.scrollTo(0, {i});")
+        time.sleep(2)  # Espera para o conteúdo carregar
+
     # Obter o HTML da página após o carregamento do conteúdo
     html_content = driver.page_source
+
+    # Criar e retornar o objeto BeautifulSoup
+    soup = BeautifulSoup(html_content, "html.parser")
 
     # Fechar o driver
     driver.quit()
 
-    # Criar e retornar o objeto BeautifulSoup
-    soup = BeautifulSoup(html_content, "html.parser")
     return soup
 
 class ScraperHeadless:
@@ -117,7 +127,7 @@ class ScraperHeadless:
         self.driver = webdriver.Chrome(options=self.chrome_options)
         self.driver.set_window_size(1024, 768)
 
-    def get_selenium_more_visited(self, url):
+    def get_selenium(self, url):
         # Abrir a página
         self.driver.get(url)
 
@@ -132,7 +142,7 @@ class ScraperHeadless:
             try:
                 WebDriverWait(self.driver, 10).until(
                     lambda driver: self.driver.execute_script("return document.body.scrollHeight") > self.last_height
-                    )
+                )
             except TimeoutException:
                 break  # Se o tempo de espera exceder, sair do loop
 
@@ -141,15 +151,6 @@ class ScraperHeadless:
             if self.new_height == self.last_height:
                 break
             self.last_height = self.new_height
-
-
-        self.button = self.driver.find_element('xpath', '/html/body/app-root/div/main/div/app-home/mat-card/div[5]/app-filtro/div[1]/div[2]/button[1]')
-        self.driver.execute_script("arguments[0].click();", self.button)
-        time.sleep(3)
-
-        for i in range(0, 50000, 500):
-            self.driver.execute_script(f"window.scrollTo(0, {i});")
-            time.sleep(2)  # Espera para o conteúdo carregar
 
         # Obter o HTML da página após o carregamento do conteúdo
         self.html_content = self.driver.page_source
@@ -161,8 +162,6 @@ class ScraperHeadless:
     def close(self):
         # Fechar o driver
         self.driver.quit()
-
-
 
 
 def get_requests(url):

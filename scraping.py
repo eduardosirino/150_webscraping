@@ -11,7 +11,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from pyvirtualdisplay import Display
-from auxiliar import get_requests, ScraperHeadless, get_selenium_more_visited, get_areas, ScraperNoHeadless
+from auxiliar import get_selenium_more_visited, get_requests, ScraperHeadless, get_areas, ScraperNoHeadless
 
 def mullerleiloes():
     urls = ["https://www.mullerleiloes.com.br/lotes/imovel"]
